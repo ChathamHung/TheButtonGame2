@@ -19,3 +19,17 @@ Welcome to **The Button Game 2**! This game features 20 challenging and fun leve
 1. Clone the repository:
    ```bash
    git clone https://github.com/ChathamHung/TheButtonGame2.git
+   ```
+2. Open the `index.html` file in your browser to start playing.
+
+## Contributing
+
+Contributions are welcome! Feel free to fork the repository and submit a pull request with your improvements or new features.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+Have fun playing **The Button Game 2**!
