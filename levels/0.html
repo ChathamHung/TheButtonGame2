@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			overflow: hidden;
+		}
+
+		.title {
+			text-align: center;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Welcome to <b>The Button Game 2</b>!</h1>
+	<button id="next">Let's geting start!</button>
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 0;
+		const allowTip = false;
+		const tip = ``;
+
+		// Override the next function to use the correct level number
+		function next() {
+			// Request full screen before proceeding to next level
+			window.parent.postMessage({ type: 'requestFullScreen' }, '*');
+			
+			// Then complete the level
+			window.parent.postMessage({ type: 'levelComplete', level: level }, '*');
+		}
+		
+		// Replace the event listener to use our updated function
+		document.getElementById("next").addEventListener("click", next);
+		
+		// Setup the level data
+		setup(level, allowTip, tip);
+	</script> <!-- Local Script -->
+</body>
+</html>

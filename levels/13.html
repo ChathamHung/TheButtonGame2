@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			margin: 0;
+			padding: 20px;
+		}
+
+		.title {
+			text-align: center;
+		}
+		
+		.main-container {
+			max-width: 600px;
+			width: 100%;
+			background-color: white;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+			margin: 0 auto;
+		}
+		
+		.emoji-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin: 30px 0;
+			font-size: 3rem;
+			letter-spacing: 10px;
+		}
+		
+		.answer-container {
+			max-width: 500px;
+			margin: 0 auto;
+			text-align: center;
+		}
+		
+		.answer-input {
+			width: 80%;
+			padding: 12px;
+			font-size: 16px;
+			border: 2px solid #ccc;
+			border-radius: 4px;
+			margin-bottom: 15px;
+			text-align: center;
+		}
+		
+		.answer-input:focus {
+			border-color: #4CAF50;
+			outline: none;
+		}
+		
+		.submit-btn {
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			padding: 12px 24px;
+			font-size: 16px;
+			border-radius: 4px;
+			cursor: pointer;
+			transition: background-color 0.3s;
+		}
+		
+		.submit-btn:hover {
+			background-color: #45a049;
+		}
+		
+		.feedback {
+			margin-top: 20px;
+			font-size: 18px;
+			min-height: 27px;
+		}
+		
+		.correct {
+			color: #4CAF50;
+			font-weight: bold;
+		}
+		
+		.incorrect {
+			color: #f44336;
+		}
+		
+		.hint {
+			margin-top: 15px;
+			color: #2196F3;
+			cursor: pointer;
+			display: inline-block;
+		}
+		
+		.hint:hover {
+			text-decoration: underline;
+		}
+		
+		.progress {
+			margin-top: 30px;
+			text-align: center;
+			font-size: 18px;
+			color: #555;
+		}
+		
+		.quiz-complete {
+			text-align: center;
+			margin: 30px 0;
+			font-size: 24px;
+			color: #4CAF50;
+			font-weight: bold;
+			display: none;
+		}
+		
+		#next {
+			display: none;
+			margin: 20px auto;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<div class="main-container">
+		<h1 class="title">Emoji Quiz Challenge</h1>
+		<div class="emoji-container" id="emoji-display"></div>
+		
+		<div class="answer-container">
+			<input type="text" id="answer-input" class="answer-input" autocomplete="off" placeholder="What does this emoji sequence mean?">
+			<button id="submit-answer" class="submit-btn">Submit Answer</button>
+			<div class="feedback" id="feedback"></div>
+			<div class="hint" id="hint">Need a hint?</div>
+		</div>
+		
+		<div class="progress" id="progress">Question 1 of 5</div>
+		
+		<div class="quiz-complete" id="quiz-complete">
+			Congratulations! You've completed the emoji quiz!
+		</div>
+		
+		<button id="next">Next Level</button>
+	</div>
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 13;
+		const allowTip = true;
+		const tip = `Guess what the emoji sequence represents. Type your answer in the input field. You can ask for hints if you're stuck!<br><br>Here have some keywords: <br>fast food<br>exercise<br>summer<br>technology<br>ocean`;
+		const completeText = `Great job! You've successfully completed the emoji quiz challenge!`;
+
+		// Quiz data: emoji sequence, answer, hint
+		const quizData = [
+			{
+				emoji: "🌍 🌊 🐠 🐙 🐬",
+				answer: "ocean",
+				hint: "It's a large body of water that covers most of Earth's surface"
+			},
+			{
+				emoji: "🍕 🍔 🌭 🍟 🥤",
+				answer: "fast food",
+				hint: "Quick meals you can get at places like McDonald's or Burger King"
+			},
+			{
+				emoji: "🏃‍♀️ 🚴‍♂️ 🏊‍♀️ 🏋️‍♂️ 🧘‍♀️",
+				answer: "exercise",
+				hint: "Physical activities that keep you healthy and fit"
+			},
+			{
+				emoji: "🌞 🏖️ 🩱 🍦 🕶️",
+				answer: "summer",
+				hint: "The hottest season of the year"
+			},
+			{
+				emoji: "📱 💻 🖥️ 🎮 📷",
+				answer: "technology",
+				hint: "Electronic devices and gadgets we use in modern life"
+			}
+		];
+
+		// DOM elements
+		const emojiDisplay = document.getElementById('emoji-display');
+		const answerInput = document.getElementById('answer-input');
+		const submitButton = document.getElementById('submit-answer');
+		const feedbackElement = document.getElementById('feedback');
+		const hintElement = document.getElementById('hint');
+		const progressElement = document.getElementById('progress');
+		const quizCompleteElement = document.getElementById('quiz-complete');
+		const nextButton = document.getElementById('next');
+
+		// Game state
+		let currentQuestionIndex = 0;
+		let correctAnswers = 0;
+		let hintUsed = false;
+
+		// Initialize the quiz
+		function initQuiz() {
+			displayCurrentQuestion();
+			
+			// Event listeners
+			submitButton.addEventListener('click', checkAnswer);
+			answerInput.addEventListener('keypress', function(e) {
+				if (e.key === 'Enter') {
+					checkAnswer();
+				}
+			});
+			hintElement.addEventListener('click', showHint);
+		}
+
+		// Display the current question
+		function displayCurrentQuestion() {
+			if (currentQuestionIndex < quizData.length) {
+				const currentQuestion = quizData[currentQuestionIndex];
+				emojiDisplay.textContent = currentQuestion.emoji;
+				progressElement.textContent = `Question ${currentQuestionIndex + 1} of ${quizData.length}`;
+				answerInput.value = '';
+				feedbackElement.textContent = '';
+				feedbackElement.className = 'feedback';
+				hintUsed = false;
+				answerInput.focus();
+			} else {
+				// Quiz completed
+				emojiDisplay.textContent = '🎉 🎊 🏆';
+				answerInput.style.display = 'none';
+				submitButton.style.display = 'none';
+				hintElement.style.display = 'none';
+				progressElement.style.display = 'none';
+				quizCompleteElement.style.display = 'block';
+				nextButton.style.display = 'block';
+				feedbackElement.textContent = `You got ${correctAnswers} out of ${quizData.length} correct!`;
+				feedbackElement.className = 'feedback correct';
+			}
+		}
+
+		// Check the user's answer
+		function checkAnswer() {
+			const currentQuestion = quizData[currentQuestionIndex];
+			const userAnswer = answerInput.value.trim().toLowerCase();
+			
+			if (userAnswer === '') {
+				feedbackElement.textContent = 'Please enter an answer!';
+				feedbackElement.className = 'feedback incorrect';
+				return;
+			}
+			
+			if (userAnswer === currentQuestion.answer.toLowerCase()) {
+				feedbackElement.textContent = 'Correct! Well done!';
+				feedbackElement.className = 'feedback correct';
+				correctAnswers++;
+				
+				// Move to next question after a short delay
+				setTimeout(() => {
+					currentQuestionIndex++;
+					displayCurrentQuestion();
+				}, 1500);
+			} else {
+				feedbackElement.textContent = 'Incorrect. Try again!';
+				feedbackElement.className = 'feedback incorrect';
+			}
+		}
+
+		// Show hint for the current question
+		function showHint() {
+			if (!hintUsed) {
+				const currentQuestion = quizData[currentQuestionIndex];
+				feedbackElement.textContent = `Hint: ${currentQuestion.hint}`;
+				feedbackElement.className = 'feedback';
+				hintUsed = true;
+			}
+		}
+
+		// Complete the level
+		nextButton.addEventListener('click', function() {
+			next();
+		});
+
+		// Initialize the quiz when the page loads
+		initQuiz();
+
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

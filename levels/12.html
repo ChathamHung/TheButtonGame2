@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			font-family: 'Arial', sans-serif;
+			background-color: #f5f5f5;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			margin: 0;
+			padding: 20px;
+		}
+		
+		.title {
+			text-align: center;
+			margin: 20px 0;
+			color: #333;
+		}
+		
+		.main-container {
+			max-width: 600px;
+			width: 100%;
+			background-color: white;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+		}
+		
+		.page {
+			display: none;
+		}
+		
+		.page.active {
+			display: block;
+		}
+		
+		.form-group {
+			margin-bottom: 20px;
+		}
+		
+		label {
+			display: block;
+			margin-bottom: 8px;
+			font-weight: bold;
+			color: #555;
+		}
+		
+		input {
+			width: 100%;
+			padding: 10px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			font-size: 16px;
+			box-sizing: border-box;
+		}
+		
+		input:focus {
+			outline: none;
+			border-color: #4CAF50;
+			box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+		}
+		
+		.error {
+			color: #f44336;
+			font-size: 14px;
+			margin-top: 5px;
+			display: none;
+		}
+		
+		.button {
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			padding: 12px 20px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 16px;
+			transition: background-color 0.3s;
+		}
+		
+		.button:hover {
+			background-color: #45a049;
+		}
+		
+		.button:disabled {
+			background-color: #cccccc;
+			cursor: not-allowed;
+		}
+		
+		.progress-bar {
+			width: 100%;
+			height: 10px;
+			background-color: #f0f0f0;
+			border-radius: 5px;
+			margin-bottom: 20px;
+			overflow: hidden;
+		}
+		
+		.progress {
+			height: 100%;
+			background-color: #4CAF50;
+			width: 0%;
+			transition: width 0.3s;
+		}
+		
+		.rules-container {
+			margin-top: 20px;
+		}
+		
+		.rule {
+			padding: 10px;
+			margin-bottom: 8px;
+			border-radius: 4px;
+			background-color: #f9f9f9;
+			border-left: 4px solid #ddd;
+			display: none;
+		}
+		
+		.rule.active {
+			display: block;
+		}
+		
+		.rule.valid {
+			border-left-color: #4CAF50;
+			background-color: #f0fff0;
+		}
+		
+		.rule.invalid {
+			border-left-color: #f44336;
+			background-color: #fff0f0;
+		}
+		
+		.captcha-container {
+			margin: 20px 0;
+			text-align: center;
+		}
+		
+		.captcha-image {
+			width: 200px;
+			height: 80px;
+			background-color: #f0f0f0;
+			margin: 0 auto;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 24px;
+			font-family: 'Courier New', monospace;
+			letter-spacing: 5px;
+			position: relative;
+			overflow: hidden;
+		}
+		
+		.captcha-image::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: repeating-linear-gradient(
+				45deg,
+				transparent,
+				transparent 5px,
+				rgba(0, 0, 0, 0.05) 5px,
+				rgba(0, 0, 0, 0.05) 10px
+			);
+		}
+		
+		.refresh-captcha {
+			margin-top: 10px;
+			background-color: #2196F3;
+			color: white;
+			border: none;
+			padding: 8px 15px;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+		
+		.refresh-captcha:hover {
+			background-color: #0b7dda;
+		}
+		
+		.success-message {
+			text-align: center;
+			color: #4CAF50;
+			font-size: 24px;
+			margin: 20px 0;
+		}
+		
+		#next {
+			display: none;
+			margin-top: 20px;
+		}
+	</style>
+</head>
+<body>
+	<h1 class="title">Create Your Account</h1>
+	
+	<div class="main-container">
+		<div class="progress-bar">
+			<div class="progress" id="progress"></div>
+		</div>
+		
+		<!-- Page 1: Name -->
+		<div class="page active" id="page-1">
+			<h2>Personal Information</h2>
+			<div class="form-group">
+				<label for="first-name">First Name</label>
+				<input type="text" id="first-name" autocomplete="off" placeholder="Enter your first name">
+				<div class="error" id="first-name-error">Please enter your first name</div>
+			</div>
+			<div class="form-group">
+				<label for="last-name">Last Name</label>
+				<input type="text" id="last-name" autocomplete="off" placeholder="Enter your last name">
+				<div class="error" id="last-name-error">Please enter your last name</div>
+			</div>
+			<button class="button" id="next-1">Continue</button>
+		</div>
+		
+		<!-- Page 2: Email -->
+		<div class="page" id="page-2">
+			<h2>Email Address</h2>
+			<div class="form-group">
+				<label for="email">Email</label>
+				<input type="email" id="email" autocomplete="off" placeholder="Enter your email address">
+				<div class="error" id="email-error">Please enter a valid email address</div>
+			</div>
+			<button class="button" id="next-2">Continue</button>
+		</div>
+		
+		<!-- Page 3: Password -->
+		<div class="page" id="page-3">
+			<h2>Create Password</h2>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<input type="text" id="password" autocomplete="off" placeholder="Enter your password">
+				<div class="error" id="password-error">Your password doesn't meet the requirements</div>
+			</div>
+			
+			<div class="rules-container">
+				<h3>Password Requirements:</h3>
+				<div class="rule" id="rule-1">Rule 1: Password must be at least 8 characters long</div>
+				<div class="rule" id="rule-2">Rule 2: Password must contain at least one uppercase letter</div>
+				<div class="rule" id="rule-3">Rule 3: Password must contain at least one number</div>
+				<div class="rule" id="rule-4">Rule 4: Password must contain at least one special character (!@#$%^&*)</div>
+				<div class="rule" id="rule-5">Rule 5: Password must contain the first letter of your first name</div>
+				<div class="rule" id="rule-6">Rule 6: Password must contain the current month number</div>
+				<div class="rule" id="rule-7">Rule 7: Password must contain a mathematical equation that equals 10</div>
+				<div class="rule" id="rule-8">Rule 8: Password must contain a color (red, blue, green, etc.)</div>
+				<div class="rule" id="rule-9">Rule 9: Password must contain an emoji</div>
+				<div class="rule" id="rule-10">Rule 10: Password must contain the word "secure"</div>
+			</div>
+			
+			<button class="button" id="next-3" disabled>Continue</button>
+		</div>
+		
+		<!-- Page 4: Captcha -->
+		<div class="page" id="page-4">
+			<h2>Verify You're Human</h2>
+			<div class="captcha-container">
+				<div class="captcha-image" id="captcha-image"></div>
+				<button class="refresh-captcha" id="refresh-captcha">Refresh</button>
+			</div>
+			<div class="form-group">
+				<label for="captcha">Enter the code above</label>
+				<input type="text" id="captcha" autocomplete="off" placeholder="Enter the captcha code">
+				<div class="error" id="captcha-error">Incorrect captcha code</div>
+			</div>
+			<button class="button" id="next-4">Continue</button>
+		</div>
+		
+		<!-- Page 5: Confirm Password -->
+		<div class="page" id="page-5">
+			<h2>Confirm Password</h2>
+			<div class="form-group">
+				<label for="confirm-password">Re-enter Password</label>
+				<input type="text" id="confirm-password" autocomplete="off" placeholder="Re-enter your password">
+				<div class="error" id="confirm-password-error">Passwords do not match</div>
+			</div>
+			<button class="button" id="complete-signup">Complete Signup</button>
+		</div>
+		
+		<!-- Success Page -->
+		<div class="page" id="success-page">
+			<div class="success-message">
+				<h2>Account Created Successfully!</h2>
+				<p>Congratulations! You've completed the challenge.</p>
+			</div>
+			<button class="button" id="next-level">Next Level</button>
+		</div>
+	</div>
+	
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 12;
+		const allowTip = true;
+		const tip = `Complete the account creation process by following all the requirements. Pay special attention to the password rules!`;
+		const completeText = `Congratulations! You've successfully created your account.`;
+
+		// DOM Elements
+		const progress = document.getElementById('progress');
+		const pages = document.querySelectorAll('.page');
+		const nextButtons = document.querySelectorAll('[id^="next-"]');
+		const firstNameInput = document.getElementById('first-name');
+		const lastNameInput = document.getElementById('last-name');
+		const emailInput = document.getElementById('email');
+		const passwordInput = document.getElementById('password');
+		const confirmPasswordInput = document.getElementById('confirm-password');
+		const captchaInput = document.getElementById('captcha');
+		const captchaImage = document.getElementById('captcha-image');
+		const refreshCaptchaButton = document.getElementById('refresh-captcha');
+		const completeSignupButton = document.getElementById('complete-signup');
+		const nextLevelButton = document.getElementById('next-level');
+		const rules = document.querySelectorAll('.rule');
+		const nextButton = document.getElementById('next');
+		
+		// Game state
+		let currentPage = 1;
+		let firstName = '';
+		let lastName = '';
+		let email = '';
+		let password = '';
+		let captchaCode = '';
+		let validRules = new Set();
+		
+		// Initialize the game
+		function init() {
+			updateProgress();
+			generateCaptcha();
+			
+			// Add event listeners
+			nextButtons.forEach(button => {
+				const pageNum = parseInt(button.id.split('-')[1]);
+				button.addEventListener('click', () => validateAndProceed(pageNum));
+			});
+			
+			refreshCaptchaButton.addEventListener('click', generateCaptcha);
+			completeSignupButton.addEventListener('click', validateConfirmPassword);
+			nextLevelButton.addEventListener('click', completeLevel);
+			
+			// Input event listeners
+			firstNameInput.addEventListener('input', validateName);
+			lastNameInput.addEventListener('input', validateName);
+			emailInput.addEventListener('input', validateEmail);
+			passwordInput.addEventListener('input', validatePassword);
+			captchaInput.addEventListener('input', validateCaptcha);
+			confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+		}
+		
+		// Update progress bar
+		function updateProgress() {
+			const progressPercentage = ((currentPage - 1) / 4) * 100;
+			progress.style.width = `${progressPercentage}%`;
+		}
+		
+		// Navigate to a specific page
+		function goToPage(pageNum) {
+			pages.forEach(page => page.classList.remove('active'));
+			
+			// Check if pageNum is a string or number
+			if (typeof pageNum === 'string' && !pageNum.startsWith('page-')) {
+				document.getElementById(pageNum).classList.add('active');
+			} else {
+				document.getElementById(`page-${pageNum}`).classList.add('active');
+			}
+			
+			// Only update currentPage and progress if it's a numeric page
+			if (typeof pageNum === 'number') {
+				currentPage = pageNum;
+				updateProgress();
+			}
+		}
+		
+		// Validate and proceed to next page
+		function validateAndProceed(pageNum) {
+			switch(pageNum) {
+				case 1:
+					if (validateName()) {
+						firstName = firstNameInput.value.trim();
+						lastName = lastNameInput.value.trim();
+						goToPage(2);
+					}
+					break;
+				case 2:
+					if (validateEmail()) {
+						email = emailInput.value.trim();
+						goToPage(3);
+					}
+					break;
+				case 3:
+					if (validRules.size === 10) {
+						password = passwordInput.value;
+						goToPage(4);
+					}
+					break;
+				case 4:
+					if (validateCaptcha()) {
+						goToPage(5);
+					}
+					break;
+			}
+		}
+		
+		// Validate name fields
+		function validateName() {
+			const firstNameValue = firstNameInput.value.trim();
+			const lastNameValue = lastNameInput.value.trim();
+			const firstNameError = document.getElementById('first-name-error');
+			const lastNameError = document.getElementById('last-name-error');
+			
+			let isValid = true;
+			
+			if (firstNameValue === '') {
+				firstNameError.style.display = 'block';
+				isValid = false;
+			} else {
+				firstNameError.style.display = 'none';
+			}
+			
+			if (lastNameValue === '') {
+				lastNameError.style.display = 'block';
+				isValid = false;
+			} else {
+				lastNameError.style.display = 'none';
+			}
+			
+			return isValid;
+		}
+		
+		// Validate email
+		function validateEmail() {
+			const emailValue = emailInput.value.trim();
+			const emailError = document.getElementById('email-error');
+			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			
+			if (!emailRegex.test(emailValue)) {
+				emailError.style.display = 'block';
+				return false;
+			} else {
+				emailError.style.display = 'none';
+				return true;
+			}
+		}
+		
+		// Validate password against all rules
+		function validatePassword() {
+			const passwordValue = passwordInput.value;
+			const passwordError = document.getElementById('password-error');
+			
+			// Show only active rules
+			updateVisibleRules();
+			
+			// Rule 1: At least 8 characters
+			if (passwordValue.length >= 8) {
+				validRules.add(1);
+				document.getElementById('rule-1').classList.add('valid');
+				document.getElementById('rule-1').classList.remove('invalid');
+			} else {
+				validRules.delete(1);
+				document.getElementById('rule-1').classList.add('invalid');
+				document.getElementById('rule-1').classList.remove('valid');
+			}
+			
+			// Only check rule 2 if rule 1 is valid
+			if (validRules.has(1)) {
+				// Rule 2: At least one uppercase letter
+				if (/[A-Z]/.test(passwordValue)) {
+					validRules.add(2);
+					document.getElementById('rule-2').classList.add('valid');
+					document.getElementById('rule-2').classList.remove('invalid');
+				} else {
+					validRules.delete(2);
+					document.getElementById('rule-2').classList.add('invalid');
+					document.getElementById('rule-2').classList.remove('valid');
+				}
+			} else {
+				validRules.delete(2);
+			}
+			
+			// Only check rule 3 if rule 2 is valid
+			if (validRules.has(2)) {
+				// Rule 3: At least one number
+				if (/\d/.test(passwordValue)) {
+					validRules.add(3);
+					document.getElementById('rule-3').classList.add('valid');
+					document.getElementById('rule-3').classList.remove('invalid');
+				} else {
+					validRules.delete(3);
+					document.getElementById('rule-3').classList.add('invalid');
+					document.getElementById('rule-3').classList.remove('valid');
+				}
+			} else {
+				validRules.delete(3);
+			}
+			
+			// Continue with sequential rule checking
+			if (validRules.has(3)) {
+				// Rule 4: At least one special character
+				if (/[!@#$%^&*]/.test(passwordValue)) {
+					validRules.add(4);
+					document.getElementById('rule-4').classList.add('valid');
+					document.getElementById('rule-4').classList.remove('invalid');
+				} else {
+					validRules.delete(4);
+					document.getElementById('rule-4').classList.add('invalid');
+					document.getElementById('rule-4').classList.remove('valid');
+				}
+			} else {
+				validRules.delete(4);
+			}
+			
+			if (validRules.has(4)) {
+				// Rule 5: Contains first letter of first name
+				if (firstName && passwordValue.includes(firstName[0].toLowerCase()) || 
+					firstName && passwordValue.includes(firstName[0].toUpperCase())) {
+					validRules.add(5);
+					document.getElementById('rule-5').classList.add('valid');
+					document.getElementById('rule-5').classList.remove('invalid');
+				} else {
+					validRules.delete(5);
+					document.getElementById('rule-5').classList.add('invalid');
+					document.getElementById('rule-5').classList.remove('valid');
+				}
+			} else {
+				validRules.delete(5);
+			}
+			
+			if (validRules.has(5)) {
+				// Rule 6: Contains current month number
+				const currentMonth = new Date().getMonth() + 1; // January is 0
+				if (passwordValue.includes(currentMonth.toString())) {
+					validRules.add(6);
+					document.getElementById('rule-6').classList.add('valid');
+					document.getElementById('rule-6').classList.remove('invalid');
+				} else {
+					validRules.delete(6);
+					document.getElementById('rule-6').classList.add('invalid');
+					document.getElementById('rule-6').classList.remove('valid');
+				}
+			} else {
+				validRules.delete(6);
+			}
+			
+			if (validRules.has(6)) {
+				// Rule 7: Contains a mathematical equation that equals 10
+				const equations = ['5+5', '2*5', '20/2', '11-1', '2+8', '4+6', '3+7', '15-5', '100/10'];
+				let hasEquation = false;
+				
+				for (const eq of equations) {
+					if (passwordValue.includes(eq)) {
+						hasEquation = true;
+						break;
+					}
+				}
+				
+				if (hasEquation) {
+					validRules.add(7);
+					document.getElementById('rule-7').classList.add('valid');
+					document.getElementById('rule-7').classList.remove('invalid');
+				} else {
+					validRules.delete(7);
+					document.getElementById('rule-7').classList.add('invalid');
+					document.getElementById('rule-7').classList.remove('valid');
+				}
+			} else {
+				validRules.delete(7);
+			}
+			
+			if (validRules.has(7)) {
+				// Rule 8: Contains a color
+				const colors = ['red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown', 'black', 'white', 'gray', 'cyan', 'magenta'];
+				let hasColor = false;
+				
+				for (const color of colors) {
+					if (passwordValue.toLowerCase().includes(color)) {
+						hasColor = true;
+						break;
+					}
+				}
+				
+				if (hasColor) {
+					validRules.add(8);
+					document.getElementById('rule-8').classList.add('valid');
+					document.getElementById('rule-8').classList.remove('invalid');
+				} else {
+					validRules.delete(8);
+					document.getElementById('rule-8').classList.add('invalid');
+					document.getElementById('rule-8').classList.remove('valid');
+				}
+			} else {
+				validRules.delete(8);
+			}
+			
+			if (validRules.has(8)) {
+				// Rule 9: Contains an emoji
+				const emojiRegex = /[\p{Emoji}]/u;
+				if (emojiRegex.test(passwordValue)) {
+					validRules.add(9);
+					document.getElementById('rule-9').classList.add('valid');
+					document.getElementById('rule-9').classList.remove('invalid');
+				} else {
+					validRules.delete(9);
+					document.getElementById('rule-9').classList.add('invalid');
+					document.getElementById('rule-9').classList.remove('valid');
+				}
+			} else {
+				validRules.delete(9);
+			}
+			
+			if (validRules.has(9)) {
+				// Rule 10: Contains the word "secure"
+				if (passwordValue.toLowerCase().includes('secure')) {
+					validRules.add(10);
+					document.getElementById('rule-10').classList.add('valid');
+					document.getElementById('rule-10').classList.remove('invalid');
+				} else {
+					validRules.delete(10);
+					document.getElementById('rule-10').classList.add('invalid');
+					document.getElementById('rule-10').classList.remove('valid');
+				}
+			} else {
+				validRules.delete(10);
+			}
+			
+			// Update visible rules after validation
+			updateVisibleRules();
+			
+			// Enable/disable continue button
+			const nextButton = document.getElementById('next-3');
+			if (validRules.size === 10) {
+				nextButton.disabled = false;
+				passwordError.style.display = 'none';
+			} else {
+				nextButton.disabled = true;
+				passwordError.style.display = 'block';
+			}
+			
+			return validRules.size === 10;
+		}
+		
+		// New function to update which rules are visible
+		function updateVisibleRules() {
+			// Hide all rules first
+			for (let i = 1; i <= 10; i++) {
+				const rule = document.getElementById(`rule-${i}`);
+				rule.classList.remove('active');
+			}
+			
+			// Show rule 1 always
+			document.getElementById('rule-1').classList.add('active');
+			
+			// For each valid rule, show the next rule
+			for (let i = 1; i < 10; i++) {
+				if (validRules.has(i)) {
+					document.getElementById(`rule-${i+1}`).classList.add('active');
+				} else {
+					break;
+				}
+			}
+		}
+		
+		// Generate captcha
+		function generateCaptcha() {
+			const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789~!@#$%^&*()_+-=[]{}|;:,.<>?';
+			captchaCode = '';
+			captchaCode = '';
+			
+			for (let i = 0; i < 6; i++) {
+				captchaCode += characters.charAt(Math.floor(Math.random() * characters.length));
+			}
+			
+			captchaImage.textContent = captchaCode;
+			captchaInput.value = '';
+		}
+		
+		// Validate captcha
+		function validateCaptcha() {
+			const captchaValue = captchaInput.value.trim();
+			const captchaError = document.getElementById('captcha-error');
+			
+			if (captchaValue !== captchaCode) {
+				captchaError.style.display = 'block';
+				return false;
+			} else {
+				captchaError.style.display = 'none';
+				return true;
+			}
+		}
+		
+		// Validate confirm password
+		function validateConfirmPassword() {
+			const confirmValue = confirmPasswordInput.value;
+			const confirmError = document.getElementById('confirm-password-error');
+			
+			if (confirmValue !== password) {
+				confirmError.style.display = 'block';
+				return false;
+			} else {
+				confirmError.style.display = 'none';
+				goToPage('success-page');
+				nextButton.style.display = 'block';
+				return true;
+			}
+		}
+		
+		// Complete the level
+		function completeLevel() {
+			next();
+		}
+		
+		// Initialize the game
+		init();
+
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

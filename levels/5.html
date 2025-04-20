@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		.title {
+			width: 300px;
+			cursor: pointer;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Nothing in here...?</h1>
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 5;
+		const allowTip = true;
+		const tip = `In a title?`;
+		const completeText = `Of course you didn't know the button would be hidden in the title!`;
+
+		const title = document.querySelector('.title');
+
+		title.addEventListener('click', () => {
+			next();
+		});
+
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

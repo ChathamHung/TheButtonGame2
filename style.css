@@ -1,0 +1,331 @@
+/* Style only for main page */
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: white;
+	height: 100vh; /* Set body to full viewport height */
+	display: flex;
+	flex-direction: column; /* Stack elements vertically */
+	overflow: hidden;
+	user-select: none;
+}
+
+.topbar {
+	min-height: 30px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 5px 10px;
+	background-color: #333;
+	color: white;
+	flex-wrap: wrap;
+}
+
+.topbar .left {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 5px;
+}
+
+.topbar .right {
+	display: flex;
+	align-items: center;
+}
+
+.button-group {
+	display: flex;
+	gap: 5px;
+}
+
+.title {
+	font-weight: bold;
+	font-size: 14px;
+	white-space: nowrap;
+}
+
+.level {
+	margin: 0 10px 0 10px;
+	font-size: 14px;
+	white-space: nowrap;
+}
+
+.backALevel {
+	padding: 2px 8px;
+	background-color: #00b3ff;
+	border: none;
+	color: black;
+	cursor: pointer;
+	border-radius: 5px;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+}
+
+.backALevel:hover {
+	background-color: #0099da;
+	transform: scale(1.05);
+}
+
+.refresh {
+	padding: 2px 8px;
+	background-color: #ffcc00;
+	border: none;
+	color: black;
+	cursor: pointer;
+	border-radius: 5px;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+}
+
+.refresh:hover {
+	background-color: #e6b800;
+	transform: scale(1.05);
+}
+
+.tip {
+	padding: 2px 8px;
+	background-color: #00ff2f;
+	border: none;
+	color: black;
+	cursor: pointer;
+	border-radius: 5px;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+}
+
+.tip:hover {
+	background-color: #00cc25;
+	transform: scale(1.05);
+}
+
+.iframe {
+	border: 0;
+	width: 100%;
+	flex-grow: 1; /* Fill remaining space */
+	height: calc(100vh - 40px); /* Viewport height minus topbar and margins */
+}
+
+/* Media queries for responsive design */
+@media screen and (max-width: 480px) {
+	.topbar {
+		padding: 5px;
+	}
+	
+	.topbar .left {
+		justify-content: center;
+		width: 100%;
+		margin-bottom: 5px;
+	}
+	
+	.topbar .right {
+		justify-content: center;
+		width: 100%;
+	}
+	
+	.button-group {
+		flex-wrap: nowrap;
+	}
+	
+	.backALevel, .refresh, .tip {
+		font-size: 12px;
+		padding: 2px 6px;
+	}
+	
+	.level {
+		margin: 0 5px;
+	}
+	
+	.iframe {
+		height: calc(100vh - 70px); /* Adjust for potentially taller topbar */
+	}
+}
+
+/* Tip Dialog Styling */
+.tipDialog {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border: none;
+	border-radius: 15px;
+	padding: 0;
+	background-color: rgba(40, 40, 40, 0.85);
+	backdrop-filter: blur(8px);
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+	max-width: 400px;
+	width: 90%;
+	user-select: none;
+}
+
+.tipDialog::backdrop {
+	background-color: rgba(0, 0, 0, 0.6);
+	backdrop-filter: blur(4px);
+}
+
+.tipContent {
+	padding: 20px;
+	color: white;
+	text-align: center;
+}
+
+.tipContent h1 {
+	margin-bottom: 15px;
+	color: #00ff2f;
+	font-size: 24px;
+}
+
+.tip-text {
+	margin-bottom: 20px;
+	line-height: 1.5;
+}
+
+.levelCompleteText {
+	margin-bottom: 20px;
+	line-height: 1.5;
+}
+
+.closeTip {
+	background-color: #00ff2f;
+	color: black;
+	border: none;
+	border-radius: 5px;
+	padding: 8px 20px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.closeTip:hover {
+	background-color: #00cc25;
+	transform: scale(1.05);
+}
+
+.highlight {
+	background-color: #0077ff;
+	transition: background-color 0.2s;
+}
+
+.highlight:hover {
+	background-color: #439aff;
+}
+
+
+/* Level Completed Styling */
+.levelCompleted {
+	padding: 20px;
+	color: white;
+	text-align: center;
+	display: none; /* Hidden by default */
+}
+
+.levelCompleted h1 {
+	margin-bottom: 15px;
+	color: #0077ff; /* Blue color for level completed */
+	font-size: 24px;
+}
+
+.levelCompleted button {
+	margin: 10px 5px;
+	border: none;
+	border-radius: 5px;
+	padding: 8px 20px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+/* Confirm Dialog Styling */
+.confirmDialog {
+	padding: 20px;
+	color: white;
+	text-align: center;
+	display: none; /* Hidden by default */
+}
+
+.confirmDialog h1 {
+	margin-bottom: 15px;
+	color: #0077ff; /* Blue color for confirm dialog */
+	font-size: 24px;
+}
+
+/* Yellow theme for refresh dialog */
+.confirmDialog h1.yellow-theme {
+	color: #ffcc00; /* Yellow color to match refresh button */
+}
+
+.confirmMessage {
+	margin-bottom: 20px;
+	line-height: 1.5;
+}
+
+.confirmButtons {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+}
+
+.confirmDialog button {
+	margin: 10px 5px;
+	border: none;
+	border-radius: 5px;
+	padding: 8px 20px;
+	font-weight: bold;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.cancelBtn {
+	background-color: #555;
+	color: white;
+}
+
+.cancelBtn:hover {
+	background-color: #777;
+	transform: scale(1.05);
+}
+
+.confirmBtn {
+	background-color: #0077ff;
+	color: white;
+}
+
+.confirmBtn:hover {
+	background-color: #439aff;
+	transform: scale(1.05);
+}
+
+/* Yellow theme for refresh button */
+.confirmBtn.yellow-theme {
+	background-color: #ffcc00;
+}
+
+.confirmBtn.yellow-theme:hover {
+	background-color: #e6b800;
+	transform: scale(1.05);
+}
+
+.stay {
+	background-color: #555;
+	color: white;
+}
+
+.stay:hover {
+	background-color: #777;
+	transform: scale(1.05);
+}
+
+.nextLevel {
+	background-color: #0077ff;
+	color: white;
+}
+
+.nextLevel:hover {
+	background-color: #439aff;
+	transform: scale(1.05);
+}

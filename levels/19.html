@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f5f5f5;
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		
+		.title {
+			text-align: center;
+			margin: 20px 0;
+		}
+		
+		.chat-container {
+			width: 600px;
+			max-width: 90%;
+			margin: 0 auto;
+			background-color: white;
+			border-radius: 10px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			height: 70vh;
+		}
+		
+		.chat-header {
+			background-color: #b96a00;
+			color: white;
+			padding: 15px;
+			display: flex;
+			align-items: center;
+		}
+		
+		.profile-pic {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background-color: #d58822;
+			background-image: url('../res/imgs/duck.jpg');
+			background-size: cover;
+			margin-right: 15px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: bold;
+			font-size: 18px;
+		}
+		
+		.chat-name {
+			font-size: 18px;
+			font-weight: bold;
+		}
+		
+		.chat-status {
+			font-size: 12px;
+			margin-top: 5px;
+		}
+		
+		.chat-messages {
+			flex: 1;
+			padding: 15px;
+			overflow-y: auto;
+			display: flex;
+			flex-direction: column;
+		}
+		
+		.message {
+			max-width: 70%;
+			padding: 10px 15px;
+			margin-bottom: 10px;
+			border-radius: 15px;
+			position: relative;
+			word-wrap: break-word;
+			animation: fadeIn 0.3s ease-in-out;
+		}
+		
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(10px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		
+		@keyframes typing {
+			0% { opacity: 0.3; }
+			50% { opacity: 1; }
+			100% { opacity: 0.3; }
+		}
+		
+		.typing-indicator {
+			display: none;
+			align-self: flex-start;
+			background-color: #f0f0f0;
+			padding: 10px 15px;
+			border-radius: 15px;
+			margin-left: 15px;
+			margin-bottom: 10px;
+			font-size: 14px;
+			color: #666;
+			animation: typing 1.5s infinite;
+		}
+		
+		.option-button {
+			background-color: #e9eaeb;
+			color: black;
+			border: none;
+			border-radius: 20px;
+			padding: 10px 15px;
+			text-align: left;
+			cursor: pointer;
+			transition: all 0.2s;
+			font-size: 14px;
+			animation: fadeIn 0.4s ease-in-out;
+			animation-fill-mode: both;
+		}
+		
+		.option-button:nth-child(2) {
+			animation-delay: 0.1s;
+		}
+		.option-button:nth-child(3) {
+			animation-delay: 0.2s;
+		}
+		.option-button:nth-child(4) {
+			animation-delay: 0.3s;
+		}
+		.option-button:nth-child(5) {
+			animation-delay: 0.4s;
+		}
+		
+		.option-button:hover {
+			background-color: #d1d3d4;
+			transform: translateY(-2px);
+			box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+		}
+		
+		.failed-message {
+			text-align: center;
+			color: #e21b3c;
+			font-weight: bold;
+			margin: 20px 0;
+			display: none;
+			animation: fadeIn 0.5s ease-in-out;
+		}
+		
+		.retry-button {
+			background-color: #d58822;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			padding: 10px 20px;
+			cursor: pointer;
+			font-size: 16px;
+			margin: 0 auto;
+			display: none;
+			transition: all 0.2s;
+		}
+		
+		.retry-button:hover {
+			background-color: #ac6d1b;
+			transform: translateY(-2px);
+		}
+		.message-time {
+			font-size: 11px;
+			color: #999;
+			margin-top: 5px;
+			text-align: right;
+		}
+		
+		.received {
+			background-color: #f0f0f0;
+			align-self: flex-start;
+			border-top-left-radius: 3px;
+		}
+		
+		.sent {
+			background-color: #dcf8c6;
+			align-self: flex-end;
+			border-top-right-radius: 4px;
+		}
+		
+		.options-container {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			margin-top: 10px;
+		}
+		
+		.option-button {
+			background-color: #e9eaeb;
+			color: black;
+			border: none;
+			border-radius: 20px;
+			padding: 10px 15px;
+			text-align: left;
+			cursor: pointer;
+			transition: background-color 0.2s;
+			font-size: 14px;
+		}
+		
+		.option-button:hover {
+			background-color: #d1d3d4;
+		}
+		
+		.typing-indicator {
+			display: none;
+			align-self: flex-start;
+			background-color: #f0f0f0;
+			padding: 10px 15px;
+			border-radius: 15px;
+			margin-left: 15px;
+			margin-bottom: 10px;
+			font-size: 14px;
+			color: #666;
+		}
+		
+		.container {
+			text-align: center;
+			margin-top: 20px;
+		}
+		
+		#next {
+			display: none;
+		}
+		
+		.progress-bar {
+			height: 5px;
+			background-color: #e0e0e0;
+			margin-top: 10px;
+			border-radius: 2px;
+			overflow: hidden;
+		}
+		
+		.progress {
+			height: 100%;
+			background-color: #075e54;
+			width: 0%;
+			transition: width 0.5s ease;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Chat with a <b>DUCK</b>!!!</h1>
+	
+	<div class="chat-container">
+		<div class="chat-header">
+			<div class="profile-pic"></div>
+			<div>
+				<div class="chat-name">DUCK</div>
+				<div class="chat-status">Online</div>
+			</div>
+		</div>
+		
+		<div class="chat-messages" id="chat-messages">
+			<!-- Messages will appear here -->
+		</div>
+		
+		<div class="typing-indicator" id="typing-indicator">
+			DUCK is quacking...
+		</div>
+		
+		<div class="progress-bar">
+			<div class="progress" id="progress-bar"></div>
+		</div>
+	</div>
+	
+	<div class="failed-message" id="failed-message">
+		You failed to convince Duck. Try again with better answers.
+	</div>
+	<button class="retry-button" id="retry-button">Try Again</button>
+	
+	<div class="container">
+		<button id="next">Next Level</button>
+	</div>
+	
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 19;
+		const allowTip = true;
+		const tip = `Quack Quack Quack Quack? Quack Quack Quack Quack Quack Quack!`;
+		const completeText = `Quack Quack Quack!`;
+
+		// Chat elements
+		const chatMessages = document.getElementById('chat-messages');
+		const typingIndicator = document.getElementById('typing-indicator');
+		const progressBar = document.getElementById('progress-bar');
+		const nextButton = document.getElementById('next');
+		const failedMessage = document.getElementById('failed-message');
+		const retryButton = document.getElementById('retry-button');
+		
+		// Game state
+		let trustLevel = 0;
+		const maxTrustLevel = 100;
+		let conversationStage = 0;
+		let waitingForResponse = false;
+		let failedAttempts = 0;
+		
+		// Conversation flow - expanded with more options
+		const conversationPool = [
+		{
+			message: "Quack Quack Quack Quack!",
+			options: [
+				{ text: "Quack Quack Quack Quack Quack Quack!", trustChange: 10 },
+				{ text: "Hi", trustChange: -10 },
+				{ text: "Quack!", trustChange: 0 },
+				{ text: "Quack Quack...", trustChange: 0 },
+				{ text: "Quack Quack Quack Quack? Quack Quack Quack Quack!", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack Quack Quack Quack!",
+			options: [
+				{ text: "Quack Quack Quack Quack Quack Quack!", trustChange: 10 },
+				{ text: "Quack Quack Quack!", trustChange: 0 },
+				{ text: "Quack!", trustChange: 0 },
+				{ text: "Quack Quack...", trustChange: -10 },
+				{ text: "Quack Quack Quack Quack Quack!", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quaaaack?",
+			options: [
+				{ text: "QUACK!", trustChange: -10 },
+				{ text: "Quack Quack Quack!", trustChange: 10 },
+				{ text: "Quackity quack?", trustChange: 0 },
+				{ text: "Quaaaack Quack.", trustChange: 0 },
+				{ text: "Silence...", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack Quack?",
+			options: [
+				{ text: "Indeed, Quack Quack!", trustChange: 10 },
+				{ text: "What are you saying?", trustChange: -10 },
+				{ text: "Quack.", trustChange: 0 },
+				{ text: "Hmm... Quack?", trustChange: 0 },
+				{ text: "Quack Quack Quack.", trustChange: 0 }
+			]
+		},
+		{
+			message: "QUACK!",
+			options: [
+				{ text: "QUACK BACK!", trustChange: 10 },
+				{ text: "Stop yelling.", trustChange: -10 },
+				{ text: "*quack*", trustChange: 0 },
+				{ text: "Quack softly.", trustChange: 0 },
+				{ text: "Why so loud, Quack?", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack Quack Quack Quack Quack?",
+			options: [
+				{ text: "Absolutely, Quack Quack Quack!", trustChange: 10 },
+				{ text: "I don't understand duck.", trustChange: -10 },
+				{ text: "Maybe... Quack?", trustChange: 0 },
+				{ text: "Could be, Quack Quack.", trustChange: 0 },
+				{ text: "I guess, Quack.", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack?",
+			options: [
+				{ text: "Quack Quack!", trustChange: 10 },
+				{ text: "No quacks given.", trustChange: -10 },
+				{ text: "Eh... Quack.", trustChange: 0 },
+				{ text: "Hmm?", trustChange: 0 },
+				{ text: "What?", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack Quackity Quack!",
+			options: [
+				{ text: "Totally Quackity!", trustChange: 10 },
+				{ text: "That's nonsense.", trustChange: -10 },
+				{ text: "Sounds cool.", trustChange: 0 },
+				{ text: "Maybe?", trustChange: 0 },
+				{ text: "Quack Quack.", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack Quack Quack...",
+			options: [
+				{ text: "Don't be sad, Quack Quack!", trustChange: 10 },
+				{ text: "Get over it.", trustChange: -10 },
+				{ text: "Quack Quack?", trustChange: 0 },
+				{ text: "Need a worm?", trustChange: 0 },
+				{ text: "Cheer up, Quack!", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack Quack Quack Quack Quack Quack Quack!",
+			options: [
+				{ text: "That's so Quack!", trustChange: 10 },
+				{ text: "Shut it, duck.", trustChange: -10 },
+				{ text: "Wow, really?", trustChange: 0 },
+				{ text: "Tell me more.", trustChange: 0 },
+				{ text: "Go on.", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack?",
+			options: [
+				{ text: "YES, QUACK!", trustChange: 10 },
+				{ text: "Whatever.", trustChange: -10 },
+				{ text: "Hmm, Quack.", trustChange: 0 },
+				{ text: "Quack?", trustChange: 0 },
+				{ text: "...", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack Quack!!",
+			options: [
+				{ text: "Excited much? Quack Quack!", trustChange: 10 },
+				{ text: "Calm down.", trustChange: -10 },
+				{ text: "Nice!", trustChange: 0 },
+				{ text: "Why?", trustChange: 0 },
+				{ text: "Let's go!", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quaaaack Quack?",
+			options: [
+				{ text: "Totally!", trustChange: 10 },
+				{ text: "You sound weird.", trustChange: -10 },
+				{ text: "Maybe?", trustChange: 0 },
+				{ text: "Could be.", trustChange: 0 },
+				{ text: "Not sure.", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack Quack Quack Quack Quack Quack Quack Quack?",
+			options: [
+				{ text: "Yes! A thousand Quacks!", trustChange: 10 },
+				{ text: "That's too many quacks.", trustChange: -10 },
+				{ text: "That's... a lot.", trustChange: 0 },
+				{ text: "Go on, Quack!", trustChange: 0 },
+				{ text: "Wow.", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack Quack.",
+			options: [
+				{ text: "Right back at you, Quack!", trustChange: 10 },
+				{ text: "That's annoying.", trustChange: -10 },
+				{ text: "Classic Quack.", trustChange: 0 },
+				{ text: "Yup.", trustChange: 0 },
+				{ text: "Exactly.", trustChange: 0 }
+			]
+		},
+		{
+			message: "Quack!",
+			options: [
+				{ text: "Quack", trustChange: 10 },
+				{ text: "Quack", trustChange: -10 },
+				{ text: "Quack", trustChange: 0 },
+				{ text: "Quack", trustChange: 0 },
+				{ text: "Quack", trustChange: 0 }
+			]
+		},
+	];
+		
+		// Create a randomized conversation flow
+		let conversation = [];
+		
+		function generateRandomConversation() {
+			// Always start with the first question
+			conversation = [conversationPool[0]];
+			
+			// Create a pool of remaining questions
+			const remainingQuestions = [...conversationPool.slice(1)];
+			
+			// Randomly select 7-9 more questions
+			const questionCount = 7 + Math.floor(Math.random() * 3);
+			
+			for (let i = 0; i < questionCount; i++) {
+				if (remainingQuestions.length === 0) break;
+				
+				// Select a random question
+				const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+				conversation.push(remainingQuestions[randomIndex]);
+				
+				// Remove the selected question
+				remainingQuestions.splice(randomIndex, 1);
+			}
+		}
+		
+		// Initialize the chat
+		function initChat() {
+			// Generate a random conversation flow
+			generateRandomConversation();
+			
+			// Add initial message after a short delay
+			setTimeout(() => {
+				receiveMessage(conversation[0].message);
+				showOptions(conversation[0].options);
+			}, 1000);
+		}
+		
+		// Display a received message
+		function receiveMessage(text) {
+			waitingForResponse = false;
+			typingIndicator.style.display = 'none';
+			
+			const messageDiv = document.createElement('div');
+			messageDiv.className = 'message received';
+			messageDiv.innerHTML = text + '<div class="message-time">' + getCurrentTime() + '</div>';
+			chatMessages.appendChild(messageDiv);
+			
+			scrollToBottom();
+		}
+		
+		// Display a sent message
+		function sendMessage(text) {
+			const messageDiv = document.createElement('div');
+			messageDiv.className = 'message sent';
+			messageDiv.innerHTML = text + '<div class="message-time">' + getCurrentTime() + '</div>';
+			chatMessages.appendChild(messageDiv);
+			
+			scrollToBottom();
+		}
+		
+		// Show response options
+		function showOptions(options) {
+			const optionsContainer = document.createElement('div');
+			optionsContainer.className = 'options-container';
+			
+			// Randomize the order of options
+			const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
+			
+			shuffledOptions.forEach(option => {
+				const button = document.createElement('button');
+				button.className = 'option-button';
+				button.textContent = option.text;
+				button.addEventListener('click', () => selectOption(option));
+				optionsContainer.appendChild(button);
+			});
+			
+			chatMessages.appendChild(optionsContainer);
+			scrollToBottom();
+		}
+		
+		// Handle option selection
+		function selectOption(option) {
+			// Remove options
+			const optionsContainer = document.querySelector('.options-container');
+			if (optionsContainer) {
+				optionsContainer.remove();
+			}
+			
+			// Send selected message
+			sendMessage(option.text);
+			
+			// Update trust level
+			updateTrustLevel(option.trustChange);
+			
+			// Show typing indicator
+			waitingForResponse = true;
+			typingIndicator.style.display = 'block';
+			scrollToBottom();
+			
+			// Move to next conversation stage
+			conversationStage++;
+			
+			// Check if conversation should continue or end
+			setTimeout(() => {
+				if (trustLevel >= maxTrustLevel) {
+					// Loan approved
+					receiveMessage("Quack Quack Quack Quack!");
+					completeLevel();
+				} else if (conversationStage >= conversation.length) {
+					// End of predefined conversation, make decision based on trust level
+					if (trustLevel >= 70) {
+						receiveMessage("Quack Quack Quack Quack Quack Quack!!!");
+						completeLevel();
+					} else {
+						failedAttempts++;
+						if (failedAttempts >= 3) {
+							receiveMessage("Quack...");
+							showFailedState(true); // Permanent failure
+						} else {
+							receiveMessage("Quack Quack Quack? Quack Quack Quack Quack Quack Quack!");
+							showFailedState(false); // Temporary failure
+						}
+					}
+				} else {
+					// Continue conversation
+					receiveMessage(conversation[conversationStage].message);
+					showOptions(conversation[conversationStage].options);
+				}
+			}, getRandomDelay());
+		}
+		
+		// Show failed state
+		function showFailedState(permanent) {
+			progressBar.style.width = 0 + '%';
+			if (permanent) {
+				failedMessage.textContent = "After 3 attempts, Duck is not like you, Game over.";
+				retryButton.style.display = 'none';
+			} else {
+				failedMessage.textContent = "You failed to convince Duck. Try again with better answers.";
+				retryButton.style.display = 'block';
+			}
+			failedMessage.style.display = 'block';
+		}
+		
+		// Update trust level
+		function updateTrustLevel(change) {
+			trustLevel += change;
+			if (trustLevel > maxTrustLevel) trustLevel = maxTrustLevel;
+			if (trustLevel < 0) trustLevel = 0;
+			
+			// Update progress bar with animation
+			progressBar.style.width = (trustLevel / maxTrustLevel * 100) + '%';
+		}
+		
+		// Complete the level
+		function completeLevel() {
+			progressBar.style.width = 100 + '%';
+			nextButton.style.display = 'block';
+		}
+		
+		// Reset chat for a new attempt
+		function resetChat() {
+			chatMessages.innerHTML = '';
+			trustLevel = 0;
+			conversationStage = 0;
+			progressBar.style.width = '0%';
+			failedMessage.style.display = 'none';
+			retryButton.style.display = 'none';
+			
+			// Generate a new random conversation
+			generateRandomConversation();
+			
+			initChat();
+		}
+		
+		// Helper function to get current time
+		function getCurrentTime() {
+			const now = new Date();
+			return now.getHours().toString().padStart(2, '0') + ':' + 
+				   now.getMinutes().toString().padStart(2, '0');
+		}
+		
+		// Helper function to get random delay (simulates typing)
+		function getRandomDelay() {
+			return 1000 + Math.random() * 2000;
+		}
+		
+		// Helper function to scroll chat to bottom
+		function scrollToBottom() {
+			chatMessages.scrollTop = chatMessages.scrollHeight;
+		}
+		
+		// Event listeners
+		retryButton.addEventListener('click', resetChat);
+		
+		// Initialize the chat
+		initChat();
+
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

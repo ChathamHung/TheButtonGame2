@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		.container {
+			overflow-x: auto;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Find button time!</h1>
+	<div class="container">
+		<button id="fake">Click me!</button>
+		<button id="fake">Click me!</button>
+		<button id="next">Click me!</button>
+		<button id="fake">Click me!</button>
+	</div>
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 2;
+		const allowTip = true;
+		const tip = `Try <b>every</b> button!`;
+		const completeText = `Very basic... right?`;
+
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

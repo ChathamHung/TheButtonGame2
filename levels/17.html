@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			overflow: hidden;
+			min-height: 0;
+			padding: 0;
+			margin: 0;
+		}
+
+		.title {
+			text-align: center;
+			margin: 10px 0;
+		}
+
+		.game-container {
+			display: flex;
+			height: calc(100vh - 100px);
+			gap: 10px;
+			padding: 0 10px;
+		}
+
+		.terminal {
+			flex: 1;
+			border: 1px solid #333;
+			border-radius: 5px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			background-color: #0c0c0c;
+			color: #cccccc;
+		}
+
+		.email-window {
+			flex: 1;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			background-color: #f9f9f9;
+		}
+
+		.window-header {
+			background-color: #0078d7;
+			color: white;
+			padding: 8px 15px;
+			font-weight: bold;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.terminal-header {
+			background-color: #333;
+			color: white;
+			padding: 8px 15px;
+			font-weight: bold;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.window-controls {
+			display: flex;
+			gap: 5px;
+		}
+
+		.control {
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+		}
+
+		.minimize {
+			background-color: #ffbd44;
+		}
+
+		.maximize {
+			background-color: #00ca56;
+		}
+
+		.close {
+			background-color: #ff605c;
+		}
+
+		.terminal-content {
+			font-family: Consolas, monospace;
+			flex: 1;
+			padding: 10px;
+			overflow-y: auto;
+			user-select: text;
+		}
+
+		/* .terminal-output {
+			white-space: pre-wrap;
+			margin-bottom: 10px;
+		} */
+
+		.terminal-input-line {
+			display: flex;
+			align-items: center;
+		}
+
+		.prompt {
+			white-space: nowrap;
+			margin-right: 5px;
+			color: #0cf;
+		}
+
+		.terminal-input {
+			flex: 1;
+			background: transparent;
+			border: none;
+			color: #cccccc;
+			font-family: Consolas, monospace;
+			font-size: 16px;
+			outline: none;
+		}
+
+		.email-content {
+			flex: 1;
+			padding: 15px;
+			overflow-y: auto;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.email-header {
+			border-bottom: 1px solid #ddd;
+			padding-bottom: 15px;
+			margin-bottom: 15px;
+		}
+
+		.email-subject {
+			font-size: 20px;
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+
+		.email-meta {
+			display: flex;
+			margin-bottom: 5px;
+		}
+
+		.email-label {
+			width: 60px;
+			color: #666;
+		}
+
+		.email-body {
+			line-height: 1.6;
+		}
+
+		.email-attachments {
+			margin-top: 20px;
+			border-top: 1px solid #eee;
+			padding-top: 15px;
+		}
+
+		.attachment-title {
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+
+		.attachments-list {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+
+		.attachment {
+			display: flex;
+			align-items: center;
+			background-color: #f0f0f0;
+			padding: 5px 10px;
+			border-radius: 3px;
+			font-size: 14px;
+			cursor: pointer;
+		}
+
+		.attachment-icon {
+			margin-right: 5px;
+			color: #2196F3;
+		}
+
+		.send-button {
+			background-color: #0078d7;
+			color: white;
+			padding: 10px 15px;
+			border: none;
+			border-radius: 3px;
+			margin-top: 20px;
+			cursor: pointer;
+			align-self: flex-end;
+			display: none;
+		}
+
+		.send-button:hover {
+			background-color: #0063b1;
+		}
+
+		.delete-all-button {
+			background-color: #d70000;
+			color: white;
+			padding: 10px 15px;
+			border: none;
+			border-radius: 3px;
+			margin-top: 20px;
+			cursor: pointer;
+			align-self: flex-end;
+			display: none;
+		}
+
+		.delete-all-button:hover {
+			background-color: #b10000;
+		}
+
+		.notification {
+			position: fixed;
+			bottom: 20px;
+			right: 20px;
+			background-color: #4CAF50;
+			color: white;
+			padding: 10px 15px;
+			border-radius: 3px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+			display: none;
+			z-index: 1000;
+		}
+
+		.error {
+			background-color: #f44336;
+		}
+
+		.container {
+			margin-top: 10px;
+			justify-content: center;
+		}
+
+		#next {
+			display: none;
+		}
+
+		.folder-name {
+			color: #4ec9b0;
+			font-weight: bold;
+		}
+
+		.file-name {
+			color: #569cd6;
+		}
+
+		.cmd-output {
+			color: #cccccc;
+		}
+
+		.error-message {
+			color: #f14c4c;
+		}
+
+		.success-message {
+			color: #4ec9b0;
+		}
+	</style> <!-- Local Style -->
+</head>
+
+<body>
+	<h1 class="title">Find the Files Using PowerShell (Terminal)</h1>
+
+	<div class="game-container">
+		<div class="terminal">
+			<div class="terminal-header">
+				<span>PowerShell</span>
+				<div class="window-controls">
+					<div class="control minimize"></div>
+					<div class="control maximize"></div>
+					<div class="control close"></div>
+				</div>
+			</div>
+			<div class="terminal-content" id="terminal-content">
+				<div class="terminal-output" id="terminal-output">Windows PowerShell
+					Copyright (C) Microsoft Corporation. All rights reserved.
+
+					Type 'help' to see available commands.
+				</div>
+				<div class="terminal-input-line">
+					<div class="prompt" id="prompt">PS D:\> </div>
+					<input type="text" class="terminal-input" id="terminal-input" autocomplete="off" autofocus>
+				</div>
+			</div>
+		</div>
+
+		<div class="email-window">
+			<div class="window-header">
+				<span>Email - Boss</span>
+				<div class="window-controls">
+					<div class="control minimize"></div>
+					<div class="control maximize"></div>
+					<div class="control close"></div>
+				</div>
+			</div>
+			<div class="email-content">
+				<div class="email-header">
+					<div class="email-subject">Urgent: Need files ASAP</div>
+					<div class="email-meta">
+						<span class="email-label">From:</span>
+						<span>boss@company.com</span>
+					</div>
+					<div class="email-meta">
+						<span class="email-label">To:</span>
+						<span>you@company.com</span>
+					</div>
+					<div class="email-meta">
+						<span class="email-label">Date:</span>
+						<span id="email-date"></span>
+					</div>
+				</div>
+
+				<div class="email-body" id="email-body">
+					<p>Hi there,</p>
+					<p>I need you to find and send me the following files from our Cloud Drive ASAP:</p>
+					<ul id="requested-files">
+						<!-- Requested files will be listed here -->
+					</ul>
+					<p>This is urgent. Please send them as soon as you find them.</p>
+					<p>Thanks,<br>The Boss</p>
+				</div>
+
+				<div class="email-attachments">
+					<div class="attachment-title">Attachments:</div>
+					<div class="attachments-list" id="attachments-list">
+						<!-- Attachments will be added here -->
+					</div>
+				</div>
+
+				<button class="send-button" id="send-button">Send Email</button>
+				<button class="delete-all-button" id="delete-all-button">Delete All Attachments</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="notification" id="notification"></div>
+
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 17;
+		const allowTip = true;
+		const tip = `Use PowerShell commands to navigate and find the files requested by your boss. Use 'cd' to change directories, 'ls' to list contents, and 'send' to send files. Type 'help' for more information.`;
+		const completeText = `Great job! You've found all the files and sent them to your boss using PowerShell commands.`;
+
+		// DOM Elements
+		const terminalContent = document.getElementById('terminal-content');
+		const terminalOutput = document.getElementById('terminal-output');
+		const terminalInput = document.getElementById('terminal-input');
+		const prompt = document.getElementById('prompt');
+		const requestedFilesList = document.getElementById('requested-files');
+		const attachmentsList = document.getElementById('attachments-list');
+		const sendButton = document.getElementById('send-button');
+		const deleteAllButton = document.getElementById('delete-all-button');
+		const notification = document.getElementById('notification');
+		const emailDate = document.getElementById('email-date');
+
+		// Set current date for email
+		const currentDate = new Date();
+		emailDate.textContent = currentDate.toLocaleDateString() + ' ' +
+			currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+		// File system structure
+		const fileTypes = [
+			'pdf', 'doc', 'xls', 'ppt', 'txt', 'jpg', 'png', 'zip', 'rar', 'exe', 'app',
+			'mp3', 'mp4', 'avi', 'mov', 'pptx', 'docx', 'xlsx', 'csv', 'json', 'xml',
+			'html', 'css', 'js', 'dll', 'apk', 'iso', 'vhd', 'vmdk', 'vmx', 'log'
+		];
+
+		const fileNames = [
+			'Budget', 'Report', 'Presentation', 'Analysis', 'Meeting_Notes',
+			'Project_Plan', 'Schedule', 'Contract', 'Invoice', 'Proposal', 'CCTV',
+			'Firewall', 'Router', 'Switch', 'Server', 'Database', 'Network',
+			'Marketing_Plan', 'Sales_Figures', 'Customer_Data', 'Employee_List',
+			'Financial_Statement', 'Tax_Return', 'Audit_Report', 'Legal_Document',
+			'Product_Specs', 'User_Manual', 'Research_Data', 'Survey_Results',
+			'Quarterly_Review', 'Annual_Report', 'Strategic_Plan', 'Roadmap', 'log',
+			'Competitor_Analysis', 'Market_Research', 'Business_Plan', 'Forecast'
+		];
+
+		const folderNames = [
+			'Documents', 'Projects', 'Reports', 'Finances', 'Marketing',
+			'HR', 'Legal', 'Sales', 'Research', 'Development', 'IT',
+			'Marketing', 'Sales', 'Operations', 'Finance', 'Legal', 'Customer_Service',
+			'Admin', 'Archive', 'Resources', 'Templates', 'Shared', 'Emergency',
+			'Personal', 'Confidential', 'Public', 'Drafts', 'Final', 'logs',
+			'2027', '2026', '2025', '2024', '2023', '2022', '2021',
+			'2020', '2019', '2018', 'Q1', 'Q2', 'Q3', 'Q4', 'Team_A',
+			'Team_B', 'Team_C', 'Team_D', 'Team_E', 'Team_F', 'Team_G',
+			'Team_H', 'Clients', 'Vendors', 'Partners', 'Internal', 'External', 'Top_Secret'
+		];
+
+		// Game state
+		let fileSystem = {};
+		let currentFolder = null;
+		let currentPath = ["D:", "CloudDrive"];
+		let requestedFiles = [];
+		let foundFiles = [];
+
+		// Initialize the game
+		function initGame() {
+			// Generate file system
+			fileSystem = generateFileSystem();
+
+			// Select random files to request
+			requestedFiles = selectRandomFiles(fileSystem, Math.floor(Math.random() * 3) + 3); // Requesting 3-5 files
+
+			// Display requested files in email
+			displayRequestedFiles();
+
+			// Set current folder to root
+			currentFolder = fileSystem;
+
+			// Add event listeners
+			terminalInput.addEventListener('keydown', handleTerminalInput);
+			sendButton.addEventListener('click', sendEmail);
+			deleteAllButton.addEventListener('click', deleteAllAttachments);
+
+			// Auto-focus terminal input
+			terminalInput.focus();
+
+			// Make terminal scrollable to bottom automatically
+			terminalContent.scrollTop = terminalContent.scrollHeight;
+		}
+
+		// Generate random file system
+		function generateFileSystem() {
+			const root = { name: 'CloudDrive', type: 'folder', contents: {} };
+
+			// Create first level folders
+			const firstLevelFolders = getRandomItems(folderNames, 5);
+			firstLevelFolders.forEach(folderName => {
+				root.contents[folderName] = { name: folderName, type: 'folder', contents: {} };
+
+				// Create second level folders and files
+				const secondLevelFolders = getRandomItems(folderNames, Math.floor(Math.random() * 3) + 1);
+				const secondLevelFiles = getRandomFiles(Math.floor(Math.random() * 5) + 1);
+
+				secondLevelFolders.forEach(subFolderName => {
+					root.contents[folderName].contents[subFolderName] = {
+						name: subFolderName,
+						type: 'folder',
+						contents: {}
+					};
+
+					// Create third level files
+					const thirdLevelFiles = getRandomFiles(Math.floor(Math.random() * 8) + 2);
+					thirdLevelFiles.forEach(file => {
+						root.contents[folderName].contents[subFolderName].contents[file.name] = file;
+					});
+				});
+
+				secondLevelFiles.forEach(file => {
+					root.contents[folderName].contents[file.name] = file;
+				});
+			});
+
+			// Add some files to root
+			const rootFiles = getRandomFiles(Math.floor(Math.random() * 3));
+			rootFiles.forEach(file => {
+				root.contents[file.name] = file;
+			});
+
+			return root;
+		}
+
+		// Get random items from array
+		function getRandomItems(array, count) {
+			const shuffled = [...array].sort(() => 0.5 - Math.random());
+			return shuffled.slice(0, count);
+		}
+
+		// Generate random files
+		function getRandomFiles(count) {
+			const files = [];
+			for (let i = 0; i < count; i++) {
+				const name = getRandomItems(fileNames, 1)[0];
+				const type = getRandomItems(fileTypes, 1)[0];
+				const fileName = `${name}_${Math.floor(Math.random() * 100)}.${type}`;
+				files.push({ name: fileName, type: 'file', extension: type });
+			}
+			return files;
+		}
+
+		// Select random files to request
+		function selectRandomFiles(fileSystem, count) {
+			const allFiles = [];
+
+			function collectFiles(folder) {
+				Object.values(folder.contents).forEach(item => {
+					if (item.type === 'file') {
+						allFiles.push(item);
+					} else if (item.type === 'folder') {
+						collectFiles(item);
+					}
+				});
+			}
+
+			collectFiles(fileSystem);
+
+			return getRandomItems(allFiles, count);
+		}
+
+		// Display requested files in email
+		function displayRequestedFiles() {
+			requestedFilesList.innerHTML = '';
+			requestedFiles.forEach(file => {
+				const li = document.createElement('li');
+				li.textContent = file.name;
+				requestedFilesList.appendChild(li);
+			});
+		}
+
+		// Handle terminal input
+		function handleTerminalInput(event) {
+			if (event.key === 'Enter') {
+				const command = terminalInput.value.trim();
+
+				// Add command to output
+				addTerminalOutput(`${prompt.textContent}${command}`);
+				// addTerminalOutput('');
+
+				// Process command
+				processCommand(command);
+
+				// Clear input
+				terminalInput.value = '';
+
+				// Scroll to bottom of terminal
+				terminalContent.scrollTop = terminalContent.scrollHeight;
+
+				addTerminalOutput('');
+			}
+		}
+
+		// Add output to terminal
+		function addTerminalOutput(text, className = '') {
+			const output = document.createElement('div');
+			output.className = 'terminal-output';
+			if (className) {
+				output.classList.add(className);
+			}
+			if (text !== '') {
+				output.textContent = text;
+			} else {
+				output.innerHTML = '<br>';
+			}
+			
+			terminalOutput.appendChild(output);
+
+			// Scroll to bottom of terminal
+			terminalContent.scrollTop = terminalContent.scrollHeight;
+		}
+
+		// Process terminal command
+		function processCommand(command) {
+			// Split command and arguments
+			const parts = command.split(' ').filter(part => part.trim() !== '');
+			const cmd = parts[0]?.toLowerCase();
+			const args = parts.slice(1);
+
+			switch (cmd) {
+				case 'cd':
+				case 'set-location':
+					changeDirectory(args);
+					break;
+				case 'ls':
+				case 'get-childitem':
+					listDirectory(args);
+					break;
+				case 'help':
+				case 'get-help':
+					showHelp(args);
+					break;
+				case 'send':
+				case 'send-item':
+					sendFile(args);
+					break;
+				case 'clear':
+				case 'cls':
+					clearTerminal();
+					break;
+				case 'pwd':
+				case 'get-location':
+					showCurrentPath();
+					break;
+				default:
+					if (cmd) {
+						addTerminalOutput(`The term '${cmd}' is not recognized as a cmdlet, function, script file, or operable program.`, 'error-message');
+					}
+			}
+		}
+
+		// Change directory
+		function changeDirectory(args) {
+			// No arguments, show current directory
+			if (args.length === 0) {
+				showCurrentPath();
+				return;
+			}
+
+			const target = args[0];
+
+			// Handle parent directory
+			if (target === '..' || target === '..') {
+				if (currentPath.length > 2) { // Don't go above C:\CloudDrive
+					// Update current path
+					currentPath.pop();
+
+					// Update current folder
+					let folder = fileSystem;
+					for (let i = 2; i < currentPath.length; i++) {
+						folder = folder.contents[currentPath[i]];
+					}
+					currentFolder = folder;
+
+					// Update prompt
+					updatePrompt();
+				} else {
+					addTerminalOutput("Already at root directory.", 'cmd-output');
+				}
+				return;
+			}
+
+			// Handle specific directory
+			if (currentFolder.contents[target] && currentFolder.contents[target].type === 'folder') {
+				// Update current folder
+				currentFolder = currentFolder.contents[target];
+
+				// Update current path
+				currentPath.push(target);
+
+				// Update prompt
+				updatePrompt();
+			} else {
+				addTerminalOutput(`Cannot find path '${target}' because it does not exist.`, 'error-message');
+			}
+		}
+
+		// List directory contents
+		function listDirectory(args) {
+			// Get folder to list
+			let folder = currentFolder;
+
+			// If arguments provided, try to list that folder
+			if (args.length > 0) {
+				const target = args[0];
+				if (folder.contents[target] && folder.contents[target].type === 'folder') {
+					folder = folder.contents[target];
+				} else {
+					addTerminalOutput(`Cannot find path '${target}' because it does not exist.`, 'error-message');
+					return;
+				}
+			}
+
+			// Sort items: folders first, then files
+			const items = Object.values(folder.contents);
+			items.sort((a, b) => {
+				if (a.type === b.type) {
+					return a.name.localeCompare(b.name);
+				}
+				return a.type === 'folder' ? -1 : 1;
+			});
+
+			// Display items
+			const folderOutput = items
+				.filter(item => item.type === 'folder')
+				.map(item => `<span class="folder-name">${item.name}</span>`)
+				.join('    ');
+
+			const fileOutput = items
+				.filter(item => item.type === 'file')
+				.map(item => `<span class="file-name">${item.name}</span>`)
+				.join('    ');
+
+			if (folderOutput) {
+				const folderDiv = document.createElement('div');
+				folderDiv.innerHTML = `Directory: ${folderOutput}`;
+				folderDiv.className = 'cmd-output';
+				terminalOutput.appendChild(folderDiv);
+			}
+
+			if (fileOutput) {
+				const fileDiv = document.createElement('div');
+				fileDiv.innerHTML = `Files: ${fileOutput}`;
+				fileDiv.className = 'cmd-output';
+				terminalOutput.appendChild(fileDiv);
+			}
+
+			if (!folderOutput && !fileOutput) {
+				addTerminalOutput("Directory is empty.", 'cmd-output');
+			}
+		}
+
+		// Show help
+		function showHelp(args) {
+			if (args.length === 0) {
+				addTerminalOutput("Available commands:", 'cmd-output');
+				addTerminalOutput("  cd, Set-Location     - Change directory (cd DirectoryName, cd .., Set-Location DirectoryName)", 'cmd-output');
+				addTerminalOutput("  ls, Get-ChildItem    - List directory contents (ls, ls DirectoryName)", 'cmd-output');
+				addTerminalOutput("  pwd, Get-Location    - Show current path", 'cmd-output');
+				addTerminalOutput("  send, Send-Item      - Send file to boss (send FileName)", 'cmd-output');
+				addTerminalOutput("  clear, cls           - Clear terminal", 'cmd-output');
+				addTerminalOutput("  help, Get-Help       - Show help (help CommandName)", 'cmd-output');
+			} else {
+				const command = args[0].toLowerCase();
+				switch (command) {
+					case 'cd':
+					case 'set-location':
+						addTerminalOutput("Change directory:", 'cmd-output');
+						addTerminalOutput("  cd               - Show current directory", 'cmd-output');
+						addTerminalOutput("  cd DirectoryName - Change to specified directory", 'cmd-output');
+						addTerminalOutput("  cd ..            - Go up one directory", 'cmd-output');
+						break;
+					case 'ls':
+					case 'get-childitem':
+						addTerminalOutput("List directory contents:", 'cmd-output');
+						addTerminalOutput("  ls               - List contents of current directory", 'cmd-output');
+						addTerminalOutput("  ls DirectoryName - List contents of specified directory", 'cmd-output');
+						break;
+					case 'send':
+					case 'send-item':
+						addTerminalOutput("Send file to boss:", 'cmd-output');
+						addTerminalOutput("  send FileName    - Send specified file to boss", 'cmd-output');
+						break;
+					case 'clear':
+					case 'cls':
+						addTerminalOutput("Clear terminal:", 'cmd-output');
+						addTerminalOutput("  clear            - Clear terminal output", 'cmd-output');
+						break;
+					case 'help':
+					case 'get-help':
+						addTerminalOutput("Show help:", 'cmd-output');
+						addTerminalOutput("  help             - Show list of commands", 'cmd-output');
+						addTerminalOutput("  help CommandName - Show help for specific command", 'cmd-output');
+						break;
+					case 'pwd':
+					case 'get-location':
+						addTerminalOutput("Show current path:", 'cmd-output');
+						addTerminalOutput("  pwd              - Show current directory path", 'cmd-output');
+						break;
+					default:
+						addTerminalOutput(`No help available for '${command}'.`, 'error-message');
+				}
+			}
+		}
+
+		// Send file to boss
+		function sendFile(args) {
+			if (args.length === 0) {
+				addTerminalOutput("Please specify a file to send.", 'error-message');
+				return;
+			}
+
+			const fileName = args.join(' ');
+
+			// Check if file exists in current directory
+			if (currentFolder.contents[fileName] && currentFolder.contents[fileName].type === 'file') {
+				const file = currentFolder.contents[fileName];
+
+				// Check if file is already sent
+				if (foundFiles.some(f => f.name === file.name)) {
+					addTerminalOutput(`File '${fileName}' has already been attached to the email.`, 'error-message');
+					return;
+				}
+
+				// Add file to attachments
+				foundFiles.push(file);
+
+				// Update attachments list
+				const attachment = document.createElement('div');
+				attachment.className = 'attachment';
+
+				const attachmentIcon = document.createElement('span');
+				attachmentIcon.className = 'attachment-icon';
+				attachmentIcon.innerHTML = getFileIcon(file.extension);
+
+				const attachmentName = document.createElement('span');
+				attachmentName.textContent = file.name;
+
+				attachment.appendChild(attachmentIcon);
+				attachment.appendChild(attachmentName);
+
+				// Add click event to remove this attachment
+				attachment.addEventListener('click', function () {
+					removeAttachment(file);
+					attachment.remove();
+				});
+
+				attachmentsList.appendChild(attachment);
+
+				// Show notification
+				addTerminalOutput(`File '${fileName}' sent to boss.`, 'success-message');
+				showNotification('File added to email');
+
+				// Check if all files are found
+				checkCompleteStatus();
+
+				deleteAllButton.style.display = 'block';
+			} else {
+				addTerminalOutput(`Cannot find file '${fileName}' in the current directory.`, 'error-message');
+			}
+		}
+
+		// Show current path
+		function showCurrentPath() {
+			addTerminalOutput(currentPath.join('\\'), 'cmd-output');
+		}
+
+		// Clear terminal
+		function clearTerminal() {
+			terminalOutput.innerHTML = '';
+		}
+
+		// Update terminal prompt
+		function updatePrompt() {
+			prompt.textContent = `PS ${currentPath.join('\\')}> `;
+		}
+
+		// Get file icon based on extension
+		function getFileIcon(extension) {
+			switch (extension) {
+				case 'pdf': return '📄';
+				case 'doc': return '📝';
+				case 'xls': return '📊';
+				case 'ppt': return '📑';
+				case 'docx': return '📝';
+				case 'xlsx': return '📊';
+				case 'pptx': return '📑';
+				case 'txt': return '📃';
+				case 'jpg': return '🖼️';
+				case 'png': return '🖼️';
+				case 'zip': return '🗜️';
+				case 'rar': return '🔒';
+				case 'exe': return '💻';
+				case 'mp3': return '🎵';
+				case 'mp4': return '🎥';
+				case 'avi': return '🎥';
+				case 'mov': return '🎥';
+				case 'html': return '🌐';
+				case 'css': return '🎨';
+				case 'js': return '💻';
+				case 'app': return '💻';
+				case 'csv': return '📊';
+				case 'json': return '📦';
+				case 'xml': return '📄';
+				case 'dll': return '📦';
+				case 'apk': return '📱';
+				case 'iso': return '💿';
+				case 'vhd': return '💾';
+				case 'vmdk': return '💾';
+				case 'vmx': return '💾';
+				case 'log': return '📝';
+				default: return '📄';
+			}
+		}
+
+		// Remove a specific attachment
+		function removeAttachment(fileToRemove) {
+			// Find the index of the file in foundFiles array
+			const index = foundFiles.findIndex(file => file.name === fileToRemove.name);
+
+			// Remove the file if found
+			if (index !== -1) {
+				foundFiles.splice(index, 1);
+				addTerminalOutput(`File '${fileToRemove.name}' removed from email.`, 'cmd-output');
+				showNotification('Attachment removed');
+
+				// Check if still have all required files
+				checkCompleteStatus();
+
+				// Hide delete all button if no attachments left
+				if (foundFiles.length === 0) {
+					deleteAllButton.style.display = 'none';
+				}
+			}
+		}
+
+			// Delete all attachments
+			function deleteAllAttachments() {
+				foundFiles = [];
+				attachmentsList.innerHTML = '';
+				sendButton.style.display = 'none';
+				deleteAllButton.style.display = 'none';
+				addTerminalOutput('All attachments removed from email.', 'cmd-output');
+			}
+
+			// Check if all required files are found
+			function checkCompleteStatus() {
+				// Check if all requested files are found
+				const allRequiredFound = requestedFiles.every(requestedFile =>
+					foundFiles.some(foundFile => foundFile.name === requestedFile.name)
+				);
+
+				if (allRequiredFound) {
+					sendButton.style.display = 'block';
+					addTerminalOutput('All requested files found! Ready to send email.', 'success-message');
+				} else {
+					sendButton.style.display = 'none';
+				}
+			}
+
+			// Send email
+			function sendEmail() {
+				// Check if all requested files are found
+				const allFound = requestedFiles.every(requestedFile =>
+					foundFiles.some(foundFile => foundFile.name === requestedFile.name)
+				);
+
+				if (allFound) {
+					addTerminalOutput('Email sent successfully!', 'success-message');
+					showNotification('Email sent successfully!');
+					next();
+				} else {
+					addTerminalOutput('You sent the wrong files. Try again.', 'error-message');
+					showNotification('You sent the wrong files. Try again.', true);
+
+					// Reset attachments
+					foundFiles = [];
+					attachmentsList.innerHTML = '';
+					sendButton.style.display = 'none';
+					deleteAllButton.style.display = 'none';
+				}
+			}
+
+			// Show notification
+			function showNotification(message, isError = false) {
+				notification.textContent = message;
+				notification.className = 'notification' + (isError ? ' error' : '');
+				notification.style.display = 'block';
+
+				setTimeout(() => {
+					notification.style.display = 'none';
+				}, 3000);
+			}
+
+			// Find a file anywhere in the file system
+			function findFileInFileSystem(fileName) {
+				const filePaths = [];
+
+				function searchFolder(folder, path) {
+					for (const [name, item] of Object.entries(folder.contents)) {
+						const currentPath = [...path, name];
+						if (item.type === 'file' && name === fileName) {
+							filePaths.push(currentPath.join('\\'));
+						} else if (item.type === 'folder') {
+							searchFolder(item, currentPath);
+						}
+					}
+				}
+
+				searchFolder(fileSystem, ['C:', 'CloudDrive']);
+				return filePaths;
+			}
+
+			// Helper function to get a folder by path
+			function getFolderByPath(path) {
+				// Start at root
+				let folder = fileSystem;
+
+				// Skip C: and CloudDrive
+				for (let i = 2; i < path.length; i++) {
+					folder = folder.contents[path[i]];
+					if (!folder || folder.type !== 'folder') {
+						return null;
+					}
+				}
+
+				return folder;
+			}
+
+			// Initialize the game
+			initGame();
+
+			setup(level, allowTip, tip, completeText);
+		</script> <!-- Local Script -->
+</body>
+</html>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			position: relative;
+			margin: 0;
+			padding: 0;
+			font-family: 'Arial', sans-serif;
+		}
+
+		.container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.main-content {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 100%;
+			text-align: center;
+		}
+
+		#captcha {
+			width: calc(616px / 2);
+			height: calc(164px / 2);
+			margin: 20px 0;
+			background-color: #F9F9F9FF;
+			border-radius: 5px;
+		}
+
+		.captcha-dialog {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background: white;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+			z-index: 1000;
+			max-width: 500px;
+			width: 90%;
+			display: none;
+		}
+
+		.dialog-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 15px;
+			border-bottom: 1px solid #eee;
+			padding-bottom: 5px;
+		}
+
+		.dialog-title {
+			font-size: 18px;
+			font-weight: bold;
+			color: #333;
+		}
+
+		.close-btn {
+			background: none;
+			border: none;
+			font-size: 20px;
+			cursor: pointer;
+			color: #777;
+			margin: 0;
+			padding: 0;
+		}
+
+		.close-btn:hover {
+			background: none;
+		}
+
+		.verify-btn {
+			background-color: #4285f4;
+			color: white;
+			border: none;
+			padding: 10px 20px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-weight: bold;
+			margin-top: 10px;
+			width: 100%;
+			margin: 0;
+		}
+
+		.verify-btn:hover {
+			background-color: #3367d6;
+		}
+
+		.question-container {
+			margin-bottom: 15px;
+		}
+
+		.question-container input {
+			width: calc(100% - 18px);
+			padding: 8px;
+			margin-top: 10px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+		}
+
+		.question-container select {
+			width: 100%;
+			padding: 8px;
+			margin-top: 10px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+		}
+
+		.overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: rgba(0, 0, 0, 0.5);
+			z-index: 999;
+			display: none;
+		}
+
+		.progress-indicator {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 15px;
+			width: 100%;
+		}
+
+		.progress-dot {
+			width: 12px;
+			height: 12px;
+			border-radius: 50%;
+			background-color: #ddd;
+		}
+
+		.progress-dot.active {
+			background-color: #4285f4;
+		}
+
+		.riddle-image {
+			width: 100%;
+			max-height: 200px;
+			object-fit: contain;
+			margin: 10px 0;
+		}
+
+		.alien-theme {
+			background: linear-gradient(to right, #000428, #004e92);
+			color: #f0f0f0;
+		}
+
+		.alien-theme .captcha-dialog {
+			background: rgba(0, 30, 60, 0.95);
+			border: 1px solid #00a8ff;
+			box-shadow: 0 0 20px rgba(0, 168, 255, 0.5);
+			color: #f0f0f0;
+		}
+
+		.alien-theme .dialog-title {
+			color: #00a8ff;
+		}
+
+		.alien-theme .verify-btn {
+			background-color: #00a8ff;
+		}
+
+		.alien-theme .verify-btn:hover {
+			background-color: #0088cc;
+		}
+
+		.alien-theme input,
+		.alien-theme select {
+			background: rgba(0, 10, 20, 0.8);
+			border: 1px solid #00a8ff;
+			color: #f0f0f0;
+		}
+
+		.alien-theme .close-btn {
+			color: #00a8ff;
+		}
+
+		.alien-theme .progress-dot.active {
+			background-color: #00a8ff;
+		}
+
+		.options-container {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 10px;
+			margin-top: 15px;
+		}
+
+		.option-btn {
+			background-color: rgba(0, 10, 20, 0.8);
+			border: 1px solid #00a8ff;
+			color: #f0f0f0;
+			padding: 10px;
+			border-radius: 4px;
+			cursor: pointer;
+			text-align: center;
+		}
+
+		.option-btn:hover {
+			background-color: rgba(0, 168, 255, 0.3);
+		}
+
+		.temporal-puzzle {
+			font-family: 'Courier New', monospace;
+			letter-spacing: 2px;
+		}
+
+		.alien-title {
+			font-family: 'Arial Black', sans-serif;
+			text-transform: uppercase;
+			letter-spacing: 3px;
+			text-shadow: 0 0 10px rgba(0, 168, 255, 0.7);
+			margin-bottom: 30px;
+		}
+	</style>
+</head>
+
+<body class="alien-theme">
+	<div class="main-content">
+		<h1 class="alien-title">PROVE YOU ARE NOT AN ALIEN</h1>
+		<img src="../res/imgs/Captcha/IAmNotAnAlien.png" alt="Verify Human" id="captcha" draggable="false"
+			style="cursor: pointer;">
+		<div class="container">
+			<button id="next" style="display: none;">Next Level</button>
+		</div>
+	</div>
+
+	<div class="overlay" id="overlay"></div>
+
+	<!-- Challenge 1: Physics -->
+	<div class="captcha-dialog" id="challenge1">
+		<div class="dialog-header">
+			<div class="dialog-title">Earth Physics Knowledge Test</div>
+			<button class="close-btn">&times;</button>
+		</div>
+		<div class="progress-indicator">
+			<div class="progress-dot active"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+		</div>
+		<div class="question-container">
+			<p>What happens when you drop an object on Earth?</p>
+			<select id="physics-answer">
+				<option value="" selected disabled>Select your answer...</option>
+				<option value="floats">It floats away</option>
+				<option value="falls">It falls to the ground</option>
+				<option value="teleports">It teleports randomly</option>
+				<option value="transforms">It transforms into energy</option>
+			</select>
+		</div>
+		<button class="verify-btn" id="verify-physics">VERIFY</button>
+	</div>
+
+	<!-- Challenge 2: Human Experience -->
+	<div class="captcha-dialog" id="challenge2">
+		<div class="dialog-header">
+			<div class="dialog-title">Human Experience Verification</div>
+			<button class="close-btn">&times;</button>
+		</div>
+		<div class="progress-indicator">
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+		</div>
+		<div class="question-container">
+			<p>Which of these would be most uncomfortable for a human?</p>
+			<select id="human-answer">
+				<option value="" selected disabled>Select your answer...</option>
+				<option value="sleep">Sleeping 8 hours</option>
+				<option value="eat">Eating ice cream</option>
+				<option value="fire">Being on fire</option>
+				<option value="breathe">Breathing oxygen</option>
+			</select>
+		</div>
+		<button class="verify-btn" id="verify-human">VERIFY</button>
+	</div>
+
+	<!-- Challenge 3: Temporal Understanding -->
+	<div class="captcha-dialog" id="challenge3">
+		<div class="dialog-header">
+			<div class="dialog-title">Earth Temporal Sequence Test</div>
+			<button class="close-btn">&times;</button>
+		</div>
+		<div class="progress-indicator">
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+		</div>
+		<div class="question-container">
+			<p class="temporal-puzzle">If yesterday was Sunday, what day will come after today?</p>
+			<input type="text" id="temporal-answer" autocomplete="off" placeholder="Enter your answer">
+		</div>
+		<button class="verify-btn" id="verify-temporal">VERIFY</button>
+	</div>
+
+	<!-- Challenge 4: Idiom Understanding -->
+	<div class="captcha-dialog" id="challenge4">
+		<div class="dialog-header">
+			<div class="dialog-title">Human Expression Comprehension</div>
+			<button class="close-btn">&times;</button>
+		</div>
+		<div class="progress-indicator">
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+		</div>
+		<div class="question-container">
+			<p>What does the human idiom "It's raining cats and dogs" mean?</p>
+			<select id="idiom-answer">
+				<option value="" selected disabled>Select your answer...</option>
+				<option value="pets">Pets are falling from the sky</option>
+				<option value="heavy">It's raining heavily</option>
+				<option value="fighting">Cats and dogs are fighting</option>
+				<option value="omen">It's a bad omen for pet owners</option>
+			</select>
+		</div>
+		<button class="verify-btn" id="verify-idiom">VERIFY</button>
+	</div>
+
+	<!-- Challenge 5: Emotion Recognition -->
+	<div class="captcha-dialog" id="challenge5">
+		<div class="dialog-header">
+			<div class="dialog-title">Human Emotional Response Test</div>
+			<button class="close-btn">&times;</button>
+		</div>
+		<div class="progress-indicator">
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot"></div>
+			<div class="progress-dot"></div>
+		</div>
+		<div class="question-container">
+			<p>How would a human typically feel when they win a large sum of money?</p>
+			<div class="options-container">
+				<div class="option-btn" data-value="angry">Angry</div>
+				<div class="option-btn" data-value="happy">Happy</div>
+				<div class="option-btn" data-value="terrified">Terrified</div>
+				<div class="option-btn" data-value="none">No emotion</div>
+			</div>
+			<input type="hidden" id="emotion-answer">
+		</div>
+		<button class="verify-btn" id="verify-emotion">VERIFY</button>
+	</div>
+
+	<!-- Challenge 6: Riddle -->
+	<div class="captcha-dialog" id="challenge6">
+		<div class="dialog-header">
+			<div class="dialog-title">Human Logic Puzzle</div>
+			<button class="close-btn">&times;</button>
+		</div>
+		<div class="progress-indicator">
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot"></div>
+		</div>
+		<div class="question-container">
+			<p>I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?</p>
+			<input type="text" id="riddle-answer" autocomplete="off" placeholder="Enter your answer">
+		</div>
+		<button class="verify-btn" id="verify-riddle">VERIFY</button>
+	</div>
+
+	<!-- Challenge 7: Final Impossibility Test -->
+	<div class="captcha-dialog" id="challenge7">
+		<div class="dialog-header">
+			<div class="dialog-title">Final Human Verification</div>
+			<button class="close-btn">&times;</button>
+		</div>
+		<div class="progress-indicator">
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+			<div class="progress-dot active"></div>
+		</div>
+		<div class="question-container">
+			<p>Which of these is impossible for humans to do naturally?</p>
+			<select id="impossible-answer">
+				<option value="" selected disabled>Select your answer...</option>
+				<option value="sleep">Sleep for 8 hours</option>
+				<option value="live">Live underwater without equipment</option>
+				<option value="eat">Eat three meals a day</option>
+				<option value="walk">Walk on two legs</option>
+			</select>
+		</div>
+		<button class="verify-btn" id="verify-impossible">VERIFY</button>
+	</div>
+
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 18;
+		const allowTip = true;
+		const tip = `Only a true human would know these details about life on Earth. Any self-respecting alien would struggle with the subtle nuances of human experience, idioms, and planetary physics. If you fail, we may need to alert the Men in Black.`;
+		const completeText = `Authentication complete. Human status confirmed.`;
+
+		var done = false;
+
+		// Elements
+		const captchaImg = document.getElementById('captcha');
+		const nextButton = document.getElementById('next');
+		const overlay = document.getElementById('overlay');
+
+		// Challenge dialogs
+		const challenge1 = document.getElementById('challenge1');
+		const challenge2 = document.getElementById('challenge2');
+		const challenge3 = document.getElementById('challenge3');
+		const challenge4 = document.getElementById('challenge4');
+		const challenge5 = document.getElementById('challenge5');
+		const challenge6 = document.getElementById('challenge6');
+		const challenge7 = document.getElementById('challenge7');
+
+		// Challenge verification buttons
+		const verifyPhysicsBtn = document.getElementById('verify-physics');
+		const verifyHumanBtn = document.getElementById('verify-human');
+		const verifyTemporalBtn = document.getElementById('verify-temporal');
+		const verifyIdiomBtn = document.getElementById('verify-idiom');
+		const verifyEmotionBtn = document.getElementById('verify-emotion');
+		const verifyRiddleBtn = document.getElementById('verify-riddle');
+		const verifyImpossibleBtn = document.getElementById('verify-impossible');
+
+		// Challenge answers
+		const physicsAnswer = document.getElementById('physics-answer');
+		const humanAnswer = document.getElementById('human-answer');
+		const temporalAnswer = document.getElementById('temporal-answer');
+		const idiomAnswer = document.getElementById('idiom-answer');
+		const emotionAnswer = document.getElementById('emotion-answer');
+		const riddleAnswer = document.getElementById('riddle-answer');
+		const impossibleAnswer = document.getElementById('impossible-answer');
+
+		// Challenge status
+		const challenges = [false, false, false, false, false, false, false];
+		let currentChallenge = 0;
+
+		// Set up emotional response buttons
+		document.querySelectorAll('.option-btn').forEach(btn => {
+			btn.addEventListener('click', function () {
+				document.querySelectorAll('.option-btn').forEach(b => b.style.backgroundColor = 'rgba(0, 10, 20, 0.8)');
+				this.style.backgroundColor = 'rgba(0, 168, 255, 0.5)';
+				emotionAnswer.value = this.dataset.value;
+			});
+		});
+
+		// Open the first challenge when captcha is clicked
+		captchaImg.addEventListener('click', function () {
+			if (done) return;
+			showChallenge(currentChallenge);
+		});
+
+		// Close buttons
+		document.querySelectorAll('.close-btn').forEach(btn => {
+			btn.addEventListener('click', hideAllChallenges);
+		});
+
+		// Verify physics answer
+		verifyPhysicsBtn.addEventListener('click', function () {
+			if (physicsAnswer.value === 'falls') {
+				challenges[0] = true;
+				hideAllChallenges();
+				currentChallenge = 1;
+				showChallenge(currentChallenge);
+			} else {
+				showMessage('Incorrect. Humans understand Earth gravity causes objects to fall.');
+			}
+		});
+
+		// Verify human experience answer
+		verifyHumanBtn.addEventListener('click', function () {
+			if (humanAnswer.value === 'fire') {
+				challenges[1] = true;
+				hideAllChallenges();
+				currentChallenge = 2;
+				showChallenge(currentChallenge);
+			} else {
+				showMessage('Incorrect. Humans find being on fire extremely uncomfortable.');
+			}
+		});
+
+		// Verify temporal understanding
+		verifyTemporalBtn.addEventListener('click', function () {
+			const answer = temporalAnswer.value.trim().toLowerCase();
+			if (answer === 'tuesday' || answer === 'tuesday.') {
+				challenges[2] = true;
+				hideAllChallenges();
+				currentChallenge = 3;
+				showChallenge(currentChallenge);
+			} else {
+				showMessage('Incorrect. Review Earth\'s sequential day structure.');
+			}
+		});
+
+		// Verify idiom understanding
+		verifyIdiomBtn.addEventListener('click', function () {
+			if (idiomAnswer.value === 'heavy') {
+				challenges[3] = true;
+				hideAllChallenges();
+				currentChallenge = 4;
+				showChallenge(currentChallenge);
+			} else {
+				showMessage('Incorrect. This is a human expression for heavy rainfall.');
+			}
+		});
+
+		// Verify emotion recognition
+		verifyEmotionBtn.addEventListener('click', function () {
+			if (emotionAnswer.value === 'happy') {
+				challenges[4] = true;
+				hideAllChallenges();
+				currentChallenge = 5;
+				showChallenge(currentChallenge);
+			} else {
+				showMessage('Incorrect. Humans typically experience happiness when receiving monetary gains.');
+			}
+		});
+
+		// Verify riddle answer
+		verifyRiddleBtn.addEventListener('click', function () {
+			const answer = riddleAnswer.value.trim().toLowerCase();
+			if (answer === 'echo' || answer === 'an echo') {
+				challenges[5] = true;
+				hideAllChallenges();
+				currentChallenge = 6;
+				showChallenge(currentChallenge);
+			} else {
+				showMessage('Incorrect. This is a common human riddle.');
+			}
+		});
+
+		// Verify final impossibility test
+		verifyImpossibleBtn.addEventListener('click', function () {
+			if (impossibleAnswer.value === 'live') {
+				challenges[6] = true;
+				hideAllChallenges();
+				completeVerification();
+			} else {
+				showMessage('Incorrect. Humans cannot survive underwater without breathing apparatus.');
+			}
+		});
+
+		// Show a specific challenge
+		function showChallenge(index) {
+			hideAllChallenges();
+
+			const challenges = [challenge1, challenge2, challenge3, challenge4, challenge5, challenge6, challenge7];
+			if (index < challenges.length) {
+				overlay.style.display = 'block';
+				challenges[index].style.display = 'block';
+			}
+		}
+
+		// Hide all challenges
+		function hideAllChallenges() {
+			overlay.style.display = 'none';
+			challenge1.style.display = 'none';
+			challenge2.style.display = 'none';
+			challenge3.style.display = 'none';
+			challenge4.style.display = 'none';
+			challenge5.style.display = 'none';
+			challenge6.style.display = 'none';
+			challenge7.style.display = 'none';
+		}
+
+		// Complete verification
+		function completeVerification() {
+			done = true;
+			captchaImg.src = '../res/imgs/Captcha/IAmNotAnAlienDone.png';
+			captchaImg.style.cursor = 'default';
+			nextButton.style.display = 'block';
+		}
+
+		function showMessage(message, title) {
+			window.parent.postMessage({
+				type: 'showMessage',
+				level: level,
+				message: message,
+				title: 'Alien Detected',
+				button: 'RETRY'
+			}, '*');
+		}
+
+		setup(level, allowTip, tip, completeText);
+	</script>
+</body>
+
+</html>

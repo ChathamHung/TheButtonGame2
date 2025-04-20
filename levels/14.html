@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			font-family: 'Arial', sans-serif;
+			background-color: #f5f5f5;
+			overflow: auto;
+		}
+
+		.title {
+			text-align: center;
+		}
+		
+		.main-container {
+			display: flex;
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 20px;
+			gap: 20px;
+		}
+		
+		.game-area {
+			flex: 1;
+			background-color: white;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+		}
+		
+		.code-area {
+			flex: 1;
+			background-color: white;
+			border-radius: 8px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+			padding: 20px;
+			display: flex;
+			flex-direction: column;
+		}
+		
+		canvas {
+			background-color: #f0f0f0;
+			border: 2px solid #ddd;
+			display: block;
+			margin: 0 auto;
+		}
+		
+		.controls {
+			display: flex;
+			gap: 10px;
+			margin-top: 20px;
+			justify-content: center;
+		}
+		
+		.button {
+			background-color: #4CAF50;
+			color: white;
+			border: none;
+			padding: 10px 15px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 14px;
+		}
+		
+		.button:hover {
+			background-color: #45a049;
+		}
+		
+		.button.reset {
+			background-color: #f44336;
+		}
+		
+		.button.reset:hover {
+			background-color: #d32f2f;
+		}
+		
+		.command-buttons {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 10px;
+			margin-bottom: 20px;
+		}
+		
+		.command-button {
+			background-color: #2196F3;
+			color: white;
+			border: none;
+			padding: 10px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 14px;
+			text-align: center;
+		}
+		
+		.command-button:hover {
+			background-color: #0b7dda;
+		}
+		
+		.code-editor {
+			flex: 1;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			padding: 10px;
+			font-family: monospace;
+			background-color: #f9f9f9;
+			overflow-y: auto;
+			min-height: 300px;
+		}
+		
+		.code-line {
+			display: flex;
+			margin-bottom: 5px;
+			align-items: center;
+		}
+		
+		.line-number {
+			width: 30px;
+			color: #999;
+			text-align: right;
+			padding-right: 10px;
+			user-select: none;
+		}
+		
+		.command {
+			background-color: #e3f2fd;
+			padding: 5px 10px;
+			border-radius: 4px;
+			margin-right: 5px;
+			flex: 1;
+		}
+		
+		.delete-command {
+			background-color: #f44336;
+			color: white;
+			border: none;
+			width: 24px;
+			height: 24px;
+			border-radius: 50%;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+		}
+		
+		.move-command {
+			background-color: #2196F3;
+			color: white;
+			border: none;
+			width: 24px;
+			height: 24px;
+			border-radius: 50%;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+			margin-left: 5px;
+		}
+		
+		.level-indicator {
+			text-align: center;
+			margin-bottom: 20px;
+			font-size: 18px;
+			font-weight: bold;
+			color: #333;
+		}
+		
+		.level-description {
+			margin-bottom: 20px;
+			padding: 10px;
+			background-color: #f0f0f0;
+			border-radius: 4px;
+			font-size: 14px;
+		}
+		
+		.success-message {
+			text-align: center;
+			color: #4CAF50;
+			font-size: 24px;
+			margin: 20px 0;
+			display: none;
+		}
+		
+		#next {
+			display: none;
+			margin: 20px auto;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Bot Coding Challenge</h1>
+	
+	<div class="main-container">
+		<div class="game-area">
+			<div class="level-indicator" id="level-indicator">Level 1/5</div>
+			<div class="level-description" id="level-description">Guide the bot to the green target.</div>
+			<canvas id="game-canvas" width="400" height="400"></canvas>
+			<div class="controls">
+				<button class="button" id="start-button">Start</button>
+				<button class="button reset" id="reset-button">Reset</button>
+			</div>
+			<div class="success-message" id="success-message">Level Complete!</div>
+		</div>
+		
+		<div class="code-area">
+			<div class="command-buttons">
+				<button class="command-button" data-command="moveForward">Move Forward</button>
+				<button class="command-button" data-command="turnLeft">Turn Left</button>
+				<button class="command-button" data-command="turnRight">Turn Right</button>
+				<!-- <button class="command-button" data-command="moveUp">Move Up</button> -->
+				<!-- <button class="command-button" data-command="moveDown">Move Down</button> -->
+				<!-- <button class="command-button" data-command="moveLeft">Move Left</button> -->
+				<!-- <button class="command-button" data-command="moveRight">Move Right</button> -->
+				<button class="command-button" data-command="loop2">Loop 2 Times</button>
+				<button class="command-button" data-command="loop">Loop 3 Times</button>
+				<button class="command-button" data-command="endLoop">End Loop</button>
+			</div>
+			
+			<div class="code-editor" id="code-editor"></div>
+		</div>
+	</div>
+	
+	<div class="container">
+		<button id="next">Next Level</button>
+	</div>
+	
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 14;
+		const allowTip = true;
+		const tip = `Program the bot to reach the target by adding commands. Use the command buttons to add instructions, then click Start to run your code. You can use loops to repeat commands.<br><br><b>Note: When using loops, you must use the 'End Loop' command to end the loop.</b>`;
+		const completeText = `Congratulations! You've completed all coding challenges!`;
+
+		// Game canvas and context
+		const canvas = document.getElementById('game-canvas');
+		const ctx = canvas.getContext('2d');
+		
+		// Game elements
+		const tileSize = 40;
+		const gridSize = 10;
+		
+		// Bot properties
+		let bot = {
+			x: 0,
+			y: 0,
+			direction: 0, // 0: right, 1: down, 2: left, 3: up
+			color: '#2196F3'
+		};
+		
+		// Target properties
+		let target = {
+			x: 0,
+			y: 0,
+			color: '#4CAF50'
+		};
+		
+		// Obstacles
+		let obstacles = [];
+		
+		// Game state
+		let currentGameLevel = 1;
+		let isRunning = false;
+		let isLevelComplete = false;
+		let commandQueue = [];
+		let loopStack = [];
+		let executionPointer = 0;
+		let animationId = null;
+		
+		// Animation properties
+		let isAnimating = false;
+		let animationStartTime = 0;
+		let animationDuration = 300; // milliseconds
+		let animationStartX = 0;
+		let animationStartY = 0;
+		let animationTargetX = 0;
+		let animationTargetY = 0;
+		let animationStartDirection = 0;
+		let animationTargetDirection = 0;
+		let animationType = ''; // 'move' or 'turn'
+		
+		// DOM elements
+		const codeEditor = document.getElementById('code-editor');
+		const startButton = document.getElementById('start-button');
+		const resetButton = document.getElementById('reset-button');
+		const commandButtons = document.querySelectorAll('.command-button');
+		const levelIndicator = document.getElementById('level-indicator');
+		const levelDescription = document.getElementById('level-description');
+		const successMessage = document.getElementById('success-message');
+		const nextButton = document.getElementById('next');
+		
+		// Level definitions
+		const levels = [
+			{
+				bot: { x: 1, y: 1, direction: 0 },
+				target: { x: 8, y: 1 },
+				obstacles: [],
+				description: "Guide the bot to the green target. Try using the 'Move Right' command multiple times."
+			},
+			{
+				bot: { x: 1, y: 1, direction: 0 },
+				target: { x: 8, y: 8 },
+				obstacles: [
+					{ x: 3, y: 1 }, { x: 3, y: 2 }, { x: 3, y: 3 }, 
+					{ x: 3, y: 4 }, { x: 3, y: 5 }, { x: 3, y: 6 }
+				],
+				description: "Navigate around the obstacles to reach the target."
+			},
+			{
+				bot: { x: 1, y: 4, direction: 0 },
+				target: { x: 8, y: 4 },
+				obstacles: [
+					{ x: 3, y: 3 }, { x: 3, y: 4 }, { x: 3, y: 5 },
+					{ x: 5, y: 3 }, { x: 5, y: 4 }, { x: 5, y: 5 },
+					{ x: 7, y: 3 }, { x: 7, y: 4 }, { x: 7, y: 5 }
+				],
+				description: "This level requires you to navigate through a maze. Try using loops to make your code more efficient."
+			},
+			{
+				bot: { x: 5, y: 1, direction: 1 },
+				target: { x: 5, y: 8 },
+				obstacles: [
+					{ x: 4, y: 3 }, { x: 5, y: 3 }, { x: 6, y: 3 },
+					{ x: 4, y: 5 }, { x: 5, y: 5 }, { x: 6, y: 5 },
+					{ x: 4, y: 7 }, { x: 6, y: 7 }
+				],
+				description: "Navigate through the zigzag path to reach the target."
+			},
+			{
+				bot: { x: 1, y: 1, direction: 0 },
+				target: { x: 8, y: 8 },
+				obstacles: [
+					{ x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 },
+					{ x: 6, y: 2 }, { x: 7, y: 2 }, { x: 8, y: 2 },
+					{ x: 2, y: 4 }, { x: 4, y: 4 }, { x: 5, y: 4 },
+					{ x: 6, y: 4 }, { x: 8, y: 4 }, { x: 2, y: 6 },
+					{ x: 3, y: 6 }, { x: 4, y: 6 }, { x: 6, y: 6 },
+					{ x: 7, y: 6 }, { x: 8, y: 6 }
+				],
+				description: "This is the final challenge! Use all the commands you've learned to navigate this complex maze."
+			}
+		];
+		
+		// Initialize the game
+		function initGame() {
+			loadLevel(currentGameLevel);
+			
+			// Add event listeners
+			startButton.addEventListener('click', startExecution);
+			resetButton.addEventListener('click', resetLevel);
+			
+			commandButtons.forEach(button => {
+				button.addEventListener('click', () => {
+					addCommand(button.dataset.command);
+				});
+			});
+			
+			// Initial render
+			render();
+		}
+		
+		// Load a specific level
+		function loadLevel(levelNum) {
+			const levelIndex = levelNum - 1;
+			if (levelIndex < 0 || levelIndex >= levels.length) return;
+			
+			const levelData = levels[levelIndex];
+			
+			// Set bot position and direction
+			bot.x = levelData.bot.x;
+			bot.y = levelData.bot.y;
+			bot.direction = levelData.bot.direction;
+			
+			// Set target position
+			target.x = levelData.target.x;
+			target.y = levelData.target.y;
+			
+			// Set obstacles
+			obstacles = [...levelData.obstacles];
+			
+			// Update UI
+			levelIndicator.textContent = `Level ${levelNum}/${levels.length}`;
+			levelDescription.textContent = levelData.description;
+			
+			// Reset game state
+			isRunning = false;
+			isLevelComplete = false;
+			commandQueue = [];
+			executionPointer = 0;
+			loopStack = [];
+			
+			// Clear code editor
+			codeEditor.innerHTML = '';
+			
+			// Hide success message
+			successMessage.style.display = 'none';
+			
+			// Render the game
+			render();
+		}
+		
+		// Add a command to the code editor
+		function addCommand(commandType) {
+			if (isRunning) return;
+			
+			const lineCount = codeEditor.children.length;
+			
+			const lineDiv = document.createElement('div');
+			lineDiv.className = 'code-line';
+			
+			const lineNumber = document.createElement('div');
+			lineNumber.className = 'line-number';
+			lineNumber.textContent = lineCount + 1;
+			
+			const commandDiv = document.createElement('div');
+			commandDiv.className = 'command';
+			
+			let commandText = '';
+			switch (commandType) {
+				case 'moveForward':
+					commandText = 'Move Forward';
+					break;
+				case 'turnLeft':
+					commandText = 'Turn Left';
+					break;
+				case 'turnRight':
+					commandText = 'Turn Right';
+					break;
+				case 'moveUp':
+					commandText = 'Move Up';
+					break;
+				case 'moveDown':
+					commandText = 'Move Down';
+					break;
+				case 'moveLeft':
+					commandText = 'Move Left';
+					break;
+				case 'moveRight':
+					commandText = 'Move Right';
+					break;
+				case 'loop':
+					commandText = 'Loop 3 Times {';
+					break;
+				case 'loop2':
+					commandText = 'Loop 2 Times {';
+					break;
+				case 'endLoop':
+					commandText = '}';
+					break;
+			}
+			
+			commandDiv.textContent = commandText;
+			commandDiv.dataset.command = commandType;
+			
+			const deleteButton = document.createElement('button');
+			deleteButton.className = 'delete-command';
+			deleteButton.textContent = 'X';
+			deleteButton.addEventListener('click', () => {
+				if (!isRunning) {
+					lineDiv.remove();
+					updateLineNumbers();
+				}
+			});
+			
+			const upButton = document.createElement('button');
+			upButton.className = 'move-command';
+			upButton.textContent = '↑';
+			upButton.addEventListener('click', () => {
+				if (!isRunning) {
+					const prev = lineDiv.previousElementSibling;
+					if (prev) {
+						codeEditor.insertBefore(lineDiv, prev);
+						updateLineNumbers();
+					}
+				}
+			});
+			
+			const downButton = document.createElement('button');
+			downButton.className = 'move-command';
+			downButton.textContent = '↓';
+			downButton.addEventListener('click', () => {
+				if (!isRunning) {
+					const next = lineDiv.nextElementSibling;
+					if (next) {
+						codeEditor.insertBefore(next, lineDiv);
+						updateLineNumbers();
+					}
+				}
+			});
+			
+			lineDiv.appendChild(lineNumber);
+			lineDiv.appendChild(commandDiv);
+			lineDiv.appendChild(upButton);
+			lineDiv.appendChild(downButton);
+			lineDiv.appendChild(deleteButton);
+			
+			codeEditor.appendChild(lineDiv);
+		}
+		
+		// Update line numbers after deletion
+		function updateLineNumbers() {
+			const lines = codeEditor.querySelectorAll('.code-line');
+			lines.forEach((line, index) => {
+				line.querySelector('.line-number').textContent = index + 1;
+			});
+		}
+		
+		// Start executing the code
+		function startExecution() {
+			if (isRunning || isLevelComplete) return;
+			
+			// Reset bot position and direction to the level's initial state
+			const levelData = levels[currentGameLevel - 1];
+			bot.x = levelData.bot.x;
+			bot.y = levelData.bot.y;
+			bot.direction = levelData.bot.direction;
+			
+			// Parse commands from code editor
+			parseCommands();
+			
+			if (commandQueue.length === 0) return;
+			
+			isRunning = true;
+			executionPointer = 0;
+			loopStack = [];
+			
+			// Start execution loop
+			executeNextCommand();
+		}
+		
+		// Parse commands from the code editor
+		function parseCommands() {
+			commandQueue = [];
+			const commandElements = codeEditor.querySelectorAll('.command');
+			
+			commandElements.forEach(element => {
+				commandQueue.push(element.dataset.command);
+			});
+		}
+		
+		// Execute the next command in the queue
+		function executeNextCommand() {
+			if (!isRunning || executionPointer >= commandQueue.length) {
+				isRunning = false;
+				checkLevelComplete();
+				return;
+			}
+			
+			if (isAnimating) {
+				// Wait for animation to complete
+				requestAnimationFrame(executeNextCommand);
+				return;
+			}
+			
+			const command = commandQueue[executionPointer];
+			
+			switch (command) {
+				case 'moveForward':
+					moveBot();
+					break;
+				case 'turnLeft':
+					turnBot(-1);
+					break;
+				case 'turnRight':
+					turnBot(1);
+					break;
+				case 'moveUp':
+					moveBotDirection(0, -1);
+					break;
+				case 'moveDown':
+					moveBotDirection(0, 1);
+					break;
+				case 'moveLeft':
+					moveBotDirection(-1, 0);
+					break;
+				case 'moveRight':
+					moveBotDirection(1, 0);
+					break;
+				case 'loop':
+					// Push current position and loop count to stack
+					loopStack.push({ position: executionPointer, count: 3 });
+					executionPointer++;
+					executeNextCommand();
+					break;
+				case 'loop2':
+					// Push current position and loop count to stack
+					loopStack.push({ position: executionPointer, count: 2 });
+					executionPointer++;
+					executeNextCommand();
+					break;
+				case 'endLoop':
+					if (loopStack.length > 0) {
+						const loop = loopStack[loopStack.length - 1];
+						loop.count--;
+						
+						if (loop.count > 0) {
+							// Jump back to the start of the loop
+							executionPointer = loop.position;
+						} else {
+							// Loop finished, remove from stack
+							loopStack.pop();
+						}
+					}
+					executionPointer++;
+					executeNextCommand();
+					break;
+			}
+		}
+		
+		// Move the bot in its current direction
+		function moveBot() {
+			switch (bot.direction) {
+				case 0: // Right
+					moveBotDirection(1, 0);
+					break;
+				case 1: // Down
+					moveBotDirection(0, 1);
+					break;
+				case 2: // Left
+					moveBotDirection(-1, 0);
+					break;
+				case 3: // Up
+					moveBotDirection(0, -1);
+					break;
+			}
+		}
+		
+		// Move the bot in a specific direction
+		function moveBotDirection(dx, dy) {
+			const newX = bot.x + dx;
+			const newY = bot.y + dy;
+			
+			// Check if the new position is valid
+			if (isValidPosition(newX, newY)) {
+				// Start animation
+				startMoveAnimation(bot.x, bot.y, newX, newY);
+			} else {
+				// If movement is invalid, continue to next command
+				executionPointer++;
+				executeNextCommand();
+			}
+		}
+		
+		// Turn the bot (direction: -1 for left, 1 for right)
+		function turnBot(direction) {
+			const newDirection = (bot.direction + direction + 4) % 4;
+			
+			// Start turn animation
+			startTurnAnimation(bot.direction, newDirection);
+		}
+		
+		// Start a movement animation
+		function startMoveAnimation(startX, startY, targetX, targetY) {
+			isAnimating = true;
+			animationType = 'move';
+			animationStartTime = performance.now();
+			animationStartX = startX;
+			animationStartY = startY;
+			animationTargetX = targetX;
+			animationTargetY = targetY;
+			
+			// Start animation loop
+			requestAnimationFrame(updateAnimation);
+		}
+		
+		// Start a turning animation
+		function startTurnAnimation(startDirection, targetDirection) {
+			isAnimating = true;
+			animationType = 'turn';
+			animationStartTime = performance.now();
+			animationStartDirection = startDirection;
+			animationTargetDirection = targetDirection;
+			
+			// Start animation loop
+			requestAnimationFrame(updateAnimation);
+		}
+		
+		// Update the animation
+		function updateAnimation(timestamp) {
+			if (!isAnimating) return;
+			
+			const elapsed = timestamp - animationStartTime;
+			const progress = Math.min(elapsed / animationDuration, 1);
+			
+			if (animationType === 'move') {
+				// Update bot position based on animation progress
+				bot.x = animationStartX + (animationTargetX - animationStartX) * progress;
+				bot.y = animationStartY + (animationTargetY - animationStartY) * progress;
+			} else if (animationType === 'turn') {
+				// For turning, we need to handle the rotation smoothly
+				// We can't just interpolate between directions because they're discrete values
+				// Instead, we'll calculate an angle for rendering purposes
+				const startAngle = animationStartDirection * Math.PI / 2;
+				let targetAngle = animationTargetDirection * Math.PI / 2;
+				
+				// Ensure we rotate the shortest way
+				if (Math.abs(targetAngle - startAngle) > Math.PI) {
+					if (targetAngle > startAngle) {
+						targetAngle -= Math.PI * 2;
+					} else {
+						targetAngle += Math.PI * 2;
+					}
+				}
+				
+				// Store the interpolated angle for rendering
+				bot.animationAngle = startAngle + (targetAngle - startAngle) * progress;
+				
+				// Update the actual direction at the end of the animation
+				if (progress === 1) {
+					bot.direction = animationTargetDirection;
+				}
+			}
+			
+			// Continue animation if not complete
+			if (progress < 1) {
+				requestAnimationFrame(updateAnimation);
+			} else {
+				// Animation complete
+				isAnimating = false;
+				
+				// Set final values
+				if (animationType === 'move') {
+					bot.x = animationTargetX;
+					bot.y = animationTargetY;
+				} else if (animationType === 'turn') {
+					bot.direction = animationTargetDirection;
+					delete bot.animationAngle;
+				}
+				
+				// Move to next command
+				executionPointer++;
+				setTimeout(executeNextCommand, 100); // Small delay between commands
+			}
+		}
+		
+		// Check if a position is valid (within bounds and not an obstacle)
+		function isValidPosition(x, y) {
+			// Check bounds
+			if (x < 0 || x >= gridSize || y < 0 || y >= gridSize) {
+				return false;
+			}
+			
+			// Check obstacles
+			for (const obstacle of obstacles) {
+				if (obstacle.x === x && obstacle.y === y) {
+					return false;
+				}
+			}
+			
+			return true;
+		}
+		
+		// Check if the level is complete
+		function checkLevelComplete() {
+			if (bot.x === target.x && bot.y === target.y) {
+				isLevelComplete = true;
+				successMessage.style.display = 'block';
+				
+				// If all levels are complete, show the next level button
+				if (currentGameLevel === levels.length) {
+					nextButton.style.display = 'block';
+				} else {
+					// Auto-advance to next level after a delay
+					setTimeout(() => {
+						currentGameLevel++;
+						loadLevel(currentGameLevel);
+					}, 2000);
+				}
+			}
+		}
+		
+		// Reset the current level
+		function resetLevel() {
+			if (animationId) {
+				cancelAnimationFrame(animationId);
+			}
+			
+			loadLevel(currentGameLevel);
+		}
+		
+		// Render the game
+		function render() {
+			// Clear canvas
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			
+			// Draw grid
+			drawGrid();
+			
+			// Draw obstacles
+			drawObstacles();
+			
+			// Draw target
+			drawTarget();
+			
+			// Draw bot
+			drawBot();
+			
+			// Request next frame
+			animationId = requestAnimationFrame(render);
+		}
+		
+		// Draw the grid
+		function drawGrid() {
+			ctx.strokeStyle = '#ddd';
+			ctx.lineWidth = 1;
+			
+			for (let i = 0; i <= gridSize; i++) {
+				// Vertical lines
+				ctx.beginPath();
+				ctx.moveTo(i * tileSize, 0);
+				ctx.lineTo(i * tileSize, gridSize * tileSize);
+				ctx.stroke();
+				
+				// Horizontal lines
+				ctx.beginPath();
+				ctx.moveTo(0, i * tileSize);
+				ctx.lineTo(gridSize * tileSize, i * tileSize);
+				ctx.stroke();
+			}
+		}
+		
+		// Draw the obstacles
+		function drawObstacles() {
+			ctx.fillStyle = '#f44336';
+			
+			for (const obstacle of obstacles) {
+				ctx.fillRect(
+					obstacle.x * tileSize,
+					obstacle.y * tileSize,
+					tileSize,
+					tileSize
+				);
+			}
+		}
+		
+		// Draw the target
+		function drawTarget() {
+			ctx.fillStyle = target.color;
+			ctx.beginPath();
+			ctx.arc(
+				target.x * tileSize + tileSize / 2,
+				target.y * tileSize + tileSize / 2,
+				tileSize / 3,
+				0,
+				Math.PI * 2
+			);
+			ctx.fill();
+		}
+		
+		// Draw the bot
+		function drawBot() {
+			ctx.fillStyle = bot.color;
+			
+			// Calculate position for rendering (handle fractional positions during animation)
+			const renderX = bot.x * tileSize + tileSize / 2;
+			const renderY = bot.y * tileSize + tileSize / 2;
+			
+			// Draw bot body
+			ctx.beginPath();
+			ctx.arc(
+				renderX,
+				renderY,
+				tileSize / 3,
+				0,
+				Math.PI * 2
+			);
+			ctx.fill();
+			
+			// Draw direction indicator
+			ctx.fillStyle = '#fff';
+			
+			// Use animation angle if available, otherwise use direction
+			const angle = bot.hasOwnProperty('animationAngle') 
+				? bot.animationAngle 
+				: bot.direction * Math.PI / 2;
+				
+			const x = renderX + Math.cos(angle) * (tileSize / 4);
+			const y = renderY + Math.sin(angle) * (tileSize / 4);
+			
+			ctx.beginPath();
+			ctx.arc(x, y, tileSize / 8, 0, Math.PI * 2);
+			ctx.fill();
+		}
+		
+		// Complete the level
+		nextButton.addEventListener('click', function() {
+			next();
+		});
+		
+		// Initialize the game
+		initGame();
+
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

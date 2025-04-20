@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			min-height: 100vh;
+			gap: 20px;
+		}
+		
+		.display {
+			font-size: 32px;
+			font-weight: bold;
+			background-color: #f0f0f0;
+			border: 2px solid #333;
+			border-radius: 5px;
+			padding: 10px 20px;
+			min-width: 150px;
+			text-align: center;
+			letter-spacing: 5px;
+			margin-bottom: 20px;
+		}
+		
+		.keyboard {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 10px;
+			max-width: 300px;
+			width: 100%;
+		}
+		
+		.key {
+			background-color: #4a90e2;
+			color: white;
+			font-size: 24px;
+			border: none;
+			border-radius: 5px;
+			padding: 15px;
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+		
+		.key:hover {
+			background-color: #357abd;
+			transform: scale(1.05);
+		}
+		
+		#enter {
+			background-color: #4CAF50;
+			color: white;
+			grid-column: span 3;
+			font-size: 18px;
+			padding: 10px 20px;
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		#enter:hover {
+			background-color: #45a049;
+		}
+
+		#enter:disabled {
+			background-color: #ccc;
+			cursor: not-allowed;
+		}
+		
+		.backspace {
+			grid-column: span 2;
+			background-color: #e74c3c;
+		}
+		
+		.backspace:hover {
+			background-color: #c0392b;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Which year is WW2 started?</h1>
+	
+	<div class="display" id="display">____</div>
+	
+	<div class="keyboard">
+		<button class="key" onclick="addDigit(1)">1</button>
+		<button class="key" onclick="addDigit(2)">2</button>
+		<button class="key" onclick="addDigit(3)">3</button>
+		<button class="key" onclick="addDigit(4)">4</button>
+		<button class="key" onclick="addDigit(5)">5</button>
+		<button class="key" onclick="addDigit(6)">6</button>
+		<button class="key" onclick="addDigit(7)">7</button>
+		<button class="key" onclick="addDigit(8)">8</button>
+		<button class="key" onclick="addDigit(9)">9</button>
+		<button class="key" onclick="addDigit(0)">0</button>
+		<button class="key backspace" onclick="backspace()">⌫</button>
+		<button id="enter" disabled>Enter</button>
+	</div>
+	
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 6;
+		const allowTip = true;
+		const tip = `World War II began in September <b>1939</b> when Nazi Germany invaded Poland.`;
+		const completeText = `Of course you don't want to have World War 3!`;
+		
+		let userInput = '';
+		const display = document.getElementById('display');
+		const enterBtn = document.getElementById('enter');
+		
+		function addDigit(digit) {
+			if (userInput.length < 4) {
+				userInput += digit;
+				updateDisplay();
+				
+				if (userInput.length === 4) {
+					enterBtn.disabled = false;
+				}
+			}
+		}
+		
+		function backspace() {
+			if (userInput.length > 0) {
+				userInput = userInput.slice(0, -1);
+				updateDisplay();
+				enterBtn.disabled = true;
+			}
+		}
+		
+		function updateDisplay() {
+			let displayText = userInput.padEnd(4, '_');
+			display.textContent = displayText;
+		}
+		
+		function checkAnswer() {
+			if (userInput === '1939') {
+				// Correct answer
+				next();
+			} else {
+				// Wrong answer - shake the display
+				display.style.animation = 'shake 0.5s';
+				setTimeout(() => {
+					display.style.animation = '';
+				}, 500);
+			}
+		}
+		
+		enterBtn.addEventListener('click', checkAnswer);
+		
+		// Add keyboard event listener
+		document.addEventListener('keydown', function(event) {
+			// Handle number keys (0-9)
+			if (/^[0-9]$/.test(event.key)) {
+				addDigit(parseInt(event.key));
+			}
+			// Handle backspace key
+			else if (event.key === 'Backspace') {
+				backspace();
+			}
+			// Handle Enter key
+			else if (event.key === 'Enter' && userInput.length === 4) {
+				checkAnswer();
+			}
+			
+			// Highlight the corresponding on-screen button
+			const keyButtons = document.querySelectorAll('.key');
+			keyButtons.forEach(button => {
+				if (button.textContent === event.key) {
+					button.classList.add('active');
+					setTimeout(() => {
+						button.classList.remove('active');
+					}, 100);
+				}
+			});
+		});
+		
+		function next() {
+			window.parent.postMessage({ type: 'levelComplete', level: level }, '*');
+		}
+		
+		// Add shake animation
+		document.head.insertAdjacentHTML('beforeend', `
+			<style>
+				@keyframes shake {
+					0%, 100% { transform: translateX(0); }
+					10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+					20%, 40%, 60%, 80% { transform: translateX(5px); }
+				}
+				
+				.key.active {
+					transform: scale(0.95);
+					background-color: #2c6cb0;
+				}
+			</style>
+		`);
+		
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

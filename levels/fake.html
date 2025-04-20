@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			gap: 20px;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Oh no! That is a FAKE button!!!</h1>
+	<div class="container">
+		<button id="back">Go back</button>
+	</div>
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = -1;
+		const allowTip = false;
+		const tip = ``;
+
+		const backBtn = document.querySelector("#back");
+		
+		// Get the return level from URL parameters
+		const urlParams = new URLSearchParams(window.location.search);
+		const returnLevel = parseInt(urlParams.get('returnLevel')) || 1;
+
+		// Override the back function to return to the correct level
+		function back() {
+			window.parent.postMessage({ 
+				type: 'backToLevel', 
+				returnLevel: returnLevel 
+			}, '*');
+		}
+
+		// Replace the event listener to use our updated function
+		backBtn.addEventListener("click", back);
+		
+		// Setup the level data
+		setup(level, allowTip, tip);
+
+		backBtn.focus();
+	</script> <!-- Local Script -->
+</body>
+</html>

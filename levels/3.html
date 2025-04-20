@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		.btn {
+			position: absolute;
+			top: calc(100% - 15px);
+			left: calc(100% - 15px);
+		}
+
+		@media screen and (max-width: 1100px), screen and (max-height: 600px) {
+			.btn {
+				top: calc(100% - 30px);
+				left: calc(100% - 30px);
+			}
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Find the button!</h1>
+	<button id="next" class="btn">:D</button>
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 3;
+		const allowTip = true;
+		const tip = `In a corner?`;
+		const completeText = `Button is <b>NOT</b> like you!`;
+
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

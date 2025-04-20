@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+			height: 100vh;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.title {
+			position: relative;
+			z-index: 10;
+		}
+		
+		.container {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		#next {
+			position: absolute;
+			transition: all 1.5s ease;
+			cursor: pointer;
+			z-index: 5;
+		}
+		
+		#next:hover {
+			transform: scale(1.1);
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Catch the button if you can!</h1>
+	<div class="container">
+		<button id="next">Next Level</button>
+	</div>
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 8;
+		const allowTip = true;
+		const tip = `The button is moving randomly. Try to catch it by clicking on it. You might need to be quick or develop a strategy!`;
+		const completeText = `Your mouse is faster than you!<br><br><del>It will show up next time...</del>`;
+
+		// Get the button element
+		const nextButton = document.getElementById('next');
+		
+		// Set initial position
+		positionButtonRandomly();
+		
+		// Start the movement
+		let moveInterval = setInterval(moveButtonRandomly, 1000);
+		
+		// Add event listener for when the button is clicked
+		nextButton.addEventListener('mouseenter', function() {
+			// Move the button when mouse enters
+			moveButtonRandomly();
+		});
+		
+		// Function to position the button randomly
+		function positionButtonRandomly() {
+			// Get viewport dimensions
+			const viewportWidth = window.innerWidth;
+			const viewportHeight = window.innerHeight;
+			
+			// Get button dimensions
+			const buttonWidth = nextButton.offsetWidth;
+			const buttonHeight = nextButton.offsetHeight;
+			
+			// Calculate maximum positions
+			const maxX = viewportWidth - buttonWidth;
+			const maxY = viewportHeight - buttonHeight;
+			
+			// Set random position
+			const randomX = Math.floor(Math.random() * maxX);
+			const randomY = Math.floor(Math.random() * maxY);
+			
+			// Apply position
+			nextButton.style.left = randomX + 'px';
+			nextButton.style.top = randomY + 'px';
+		}
+		
+		// Function to move the button randomly
+		function moveButtonRandomly() {
+			positionButtonRandomly();
+		}
+		
+		// Clean up interval when page is unloaded
+		window.addEventListener('beforeunload', function() {
+			clearInterval(moveInterval);
+		});
+
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

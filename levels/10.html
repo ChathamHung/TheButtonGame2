@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f5f5f5;
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		
+		.title {
+			text-align: center;
+			margin: 20px 0;
+		}
+		
+		.chat-container {
+			width: 600px;
+			max-width: 90%;
+			margin: 0 auto;
+			background-color: white;
+			border-radius: 10px;
+			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+			overflow: hidden;
+			display: flex;
+			flex-direction: column;
+			height: 70vh;
+		}
+		
+		.chat-header {
+			background-color: #075e54;
+			color: white;
+			padding: 15px;
+			display: flex;
+			align-items: center;
+		}
+		
+		.profile-pic {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background-color: #128c7e;
+			margin-right: 15px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: bold;
+			font-size: 18px;
+		}
+		
+		.chat-name {
+			font-size: 18px;
+			font-weight: bold;
+		}
+		
+		.chat-status {
+			font-size: 12px;
+			margin-top: 5px;
+		}
+		
+		.chat-messages {
+			flex: 1;
+			padding: 15px;
+			overflow-y: auto;
+			display: flex;
+			flex-direction: column;
+		}
+		
+		.message {
+			max-width: 70%;
+			padding: 10px 15px;
+			margin-bottom: 10px;
+			border-radius: 15px;
+			position: relative;
+			word-wrap: break-word;
+			animation: fadeIn 0.3s ease-in-out;
+		}
+		
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(10px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		
+		@keyframes typing {
+			0% { opacity: 0.3; }
+			50% { opacity: 1; }
+			100% { opacity: 0.3; }
+		}
+		
+		.typing-indicator {
+			display: none;
+			align-self: flex-start;
+			background-color: #f0f0f0;
+			padding: 10px 15px;
+			border-radius: 15px;
+			margin-left: 15px;
+			margin-bottom: 10px;
+			font-size: 14px;
+			color: #666;
+			animation: typing 1.5s infinite;
+		}
+		
+		.option-button {
+			background-color: #e9eaeb;
+			color: black;
+			border: none;
+			border-radius: 20px;
+			padding: 10px 15px;
+			text-align: left;
+			cursor: pointer;
+			transition: all 0.2s;
+			font-size: 14px;
+			animation: fadeIn 0.4s ease-in-out;
+			animation-fill-mode: both;
+		}
+		
+		.option-button:nth-child(2) {
+			animation-delay: 0.1s;
+		}
+		
+		.option-button:hover {
+			background-color: #d1d3d4;
+			transform: translateY(-2px);
+			box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+		}
+		
+		.failed-message {
+			text-align: center;
+			color: #e21b3c;
+			font-weight: bold;
+			margin: 20px 0;
+			display: none;
+			animation: fadeIn 0.5s ease-in-out;
+		}
+		
+		.retry-button {
+			background-color: #075e54;
+			color: white;
+			border: none;
+			border-radius: 5px;
+			padding: 10px 20px;
+			cursor: pointer;
+			font-size: 16px;
+			margin: 0 auto;
+			display: none;
+			transition: all 0.2s;
+		}
+		
+		.retry-button:hover {
+			background-color: #064940;
+			transform: translateY(-2px);
+		}
+		.message-time {
+			font-size: 11px;
+			color: #999;
+			margin-top: 5px;
+			text-align: right;
+		}
+		
+		.received {
+			background-color: #f0f0f0;
+			align-self: flex-start;
+			border-top-left-radius: 3px;
+		}
+		
+		.sent {
+			background-color: #dcf8c6;
+			align-self: flex-end;
+			border-top-right-radius: 4px;
+		}
+		
+		.options-container {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			margin-top: 10px;
+		}
+		
+		.option-button {
+			background-color: #e9eaeb;
+			color: black;
+			border: none;
+			border-radius: 20px;
+			padding: 10px 15px;
+			text-align: left;
+			cursor: pointer;
+			transition: background-color 0.2s;
+			font-size: 14px;
+		}
+		
+		.option-button:hover {
+			background-color: #d1d3d4;
+		}
+		
+		.typing-indicator {
+			display: none;
+			align-self: flex-start;
+			background-color: #f0f0f0;
+			padding: 10px 15px;
+			border-radius: 15px;
+			margin-left: 15px;
+			margin-bottom: 10px;
+			font-size: 14px;
+			color: #666;
+		}
+		
+		.container {
+			text-align: center;
+			margin-top: 20px;
+		}
+		
+		#next {
+			display: none;
+		}
+		
+		.progress-bar {
+			height: 5px;
+			background-color: #e0e0e0;
+			margin-top: 10px;
+			border-radius: 2px;
+			overflow: hidden;
+		}
+		
+		.progress {
+			height: 100%;
+			background-color: #075e54;
+			width: 0%;
+			transition: width 0.5s ease;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Borrow £10,000</h1>
+	
+	<div class="chat-container">
+		<div class="chat-header">
+			<div class="profile-pic">A</div>
+			<div>
+				<div class="chat-name">Alex</div>
+				<div class="chat-status">Online</div>
+			</div>
+		</div>
+		
+		<div class="chat-messages" id="chat-messages">
+			<!-- Messages will appear here -->
+		</div>
+		
+		<div class="typing-indicator" id="typing-indicator">
+			Alex is typing...
+		</div>
+		
+		<div class="progress-bar">
+			<div class="progress" id="progress-bar"></div>
+		</div>
+	</div>
+	
+	<div class="failed-message" id="failed-message">
+		You failed to convince Alex. Try again with better answers.
+	</div>
+	<button class="retry-button" id="retry-button">Try Again</button>
+	
+	<div class="container">
+		<button id="next">Next Level</button>
+	</div>
+	
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 10;
+		const allowTip = true;
+		const tip = `You need to convince Alex to lend you £10,000. Choose your responses carefully to build trust and address their concerns. Your goal is to reach a trust level high enough for them to agree to the loan.`;
+		const completeText = `Congratulations! You've successfully convinced Alex to lend you £10,000.<br><br><del>It will show up next time...</del>`;
+
+		// Chat elements
+		const chatMessages = document.getElementById('chat-messages');
+		const typingIndicator = document.getElementById('typing-indicator');
+		const progressBar = document.getElementById('progress-bar');
+		const nextButton = document.getElementById('next');
+		const failedMessage = document.getElementById('failed-message');
+		const retryButton = document.getElementById('retry-button');
+		
+		// Game state
+		let trustLevel = 0;
+		const maxTrustLevel = 100;
+		let conversationStage = 0;
+		let waitingForResponse = false;
+		let failedAttempts = 0;
+		
+		// Conversation flow - expanded with more options
+		const conversationPool = [
+			{
+				message: "Hi there! I noticed you wanted to talk about borrowing some money?",
+				options: [
+					{
+						text: "Yes, I need to borrow £10,000 for an important investment opportunity.",
+						trustChange: 5
+					},
+					{
+						text: "Hey! Yeah, I'm in a bit of a tight spot and need £10,000 urgently.",
+						trustChange: 0
+					}
+				]
+			},
+			{
+				message: "That's quite a substantial amount. Why do you need so much money?",
+				options: [
+					{
+						text: "I've found a promising business opportunity that requires initial capital. I've done my research and the ROI looks excellent.",
+						trustChange: 10
+					},
+					{
+						text: "I have some debts to pay off and this would really help me get back on my feet.",
+						trustChange: 5
+					}
+				]
+			},
+			{
+				message: "I see. And why are you asking me instead of going to a bank?",
+				options: [
+					{
+						text: "Banks have too much red tape and take too long. This opportunity needs quick action, and I value our relationship.",
+						trustChange: 5
+					},
+					{
+						text: "Bank interest rates are too high, and I thought since we know each other, we could work out a more favorable arrangement.",
+						trustChange: 10
+					}
+				]
+			},
+			{
+				message: "How do I know you'll be able to pay me back?",
+				options: [
+					{
+						text: "I have a stable job with good income. I can show you my financial statements if that would help.",
+						trustChange: 15
+					},
+					{
+						text: "You have my word. I've never broken a promise in my life.",
+						trustChange: 5
+					}
+				]
+			},
+			{
+				message: "What timeframe are you thinking for repayment?",
+				options: [
+					{
+						text: "I can pay you back in full within 12 months, with 5% interest as a thank you.",
+						trustChange: 15
+					},
+					{
+						text: "As soon as possible, but I can't give an exact timeframe right now.",
+						trustChange: 0
+					}
+				]
+			},
+			{
+				message: "Have you considered what might happen if your plans don't work out?",
+				options: [
+					{
+						text: "I have a contingency plan. If the investment doesn't work out, I have savings I can use as backup.",
+						trustChange: 15
+					},
+					{
+						text: "I'm confident it will work out, but if not, I'll find another way to pay you back, no matter what.",
+						trustChange: 5
+					}
+				]
+			},
+			{
+				message: "This is a big decision. What would you do in my position?",
+				options: [
+					{
+						text: "I'd want to help a friend, but I'd also need reassurance. I'm happy to sign a formal agreement to give you peace of mind.",
+						trustChange: 15
+					},
+					{
+						text: "I'd trust my instincts about the person. I hope you can see that I'm sincere and trustworthy.",
+						trustChange: 10
+					}
+				]
+			},
+			{
+				message: "I've had people not repay loans before. What makes you different?",
+				options: [
+					{
+						text: "I understand your concern. I value our relationship too much to risk it over money. I'll prioritize this repayment above all else.",
+						trustChange: 15
+					},
+					{
+						text: "I'm not like other people. I take my financial obligations very seriously.",
+						trustChange: 5
+					}
+				]
+			},
+			// New conversation items
+			{
+				message: "Do you have any collateral you could offer as security for the loan?",
+				options: [
+					{
+						text: "Yes, I own a car that's fully paid off. I'd be willing to use that as collateral if it gives you peace of mind.",
+						trustChange: 15
+					},
+					{
+						text: "I don't have any physical assets to offer, but my word and our friendship should be enough.",
+						trustChange: 0
+					}
+				]
+			},
+			{
+				message: "What exactly is this investment opportunity you mentioned?",
+				options: [
+					{
+						text: "It's a small tech startup with innovative products. I've researched their business model and growth projections thoroughly.",
+						trustChange: 10
+					},
+					{
+						text: "I'd rather not get into specifics, but trust me, it's going to be huge.",
+						trustChange: -5
+					}
+				]
+			},
+			{
+				message: "Have you borrowed large sums of money before?",
+				options: [
+					{
+						text: "Yes, I took out a business loan a few years ago and repaid it ahead of schedule. I can provide references.",
+						trustChange: 15
+					},
+					{
+						text: "No, this is my first time asking for such a large amount, but I'm committed to handling it responsibly.",
+						trustChange: 5
+					}
+				]
+			},
+			{
+				message: "What would this mean for our friendship if something goes wrong?",
+				options: [
+					{
+						text: "I value our friendship too much to let money come between us. That's why I'll make repayment my top priority.",
+						trustChange: 10
+					},
+					{
+						text: "Let's hope nothing goes wrong then! But seriously, I'm sure everything will work out fine.",
+						trustChange: 0
+					}
+				]
+			},
+			{
+				message: "How would you feel if I asked for regular updates on how you're using the money?",
+				options: [
+					{
+						text: "I'd be happy to provide updates. Transparency is important, and I want you to feel comfortable with this arrangement.",
+						trustChange: 15
+					},
+					{
+						text: "I'd prefer if you trusted me to handle it. Too much oversight might feel like you don't trust me.",
+						trustChange: -5
+					}
+				]
+			},
+			{
+				message: "What's your backup plan if this investment doesn't work out as expected?",
+				options: [
+					{
+						text: "I have multiple income streams and savings set aside specifically for emergencies like this. The loan repayment is secure.",
+						trustChange: 15
+					},
+					{
+						text: "I'll figure something out if that happens. I always land on my feet.",
+						trustChange: 0
+					}
+				]
+			},
+			{
+				message: "Would you be willing to put this agreement in writing?",
+				options: [
+					{
+						text: "Absolutely. I think a written agreement protects both of us and shows how seriously I take this.",
+						trustChange: 15
+					},
+					{
+						text: "Do we really need to? I thought we trusted each other more than that.",
+						trustChange: -5
+					}
+				]
+			}
+		];
+		
+		// Create a randomized conversation flow
+		let conversation = [];
+		
+		function generateRandomConversation() {
+			// Always start with the first question
+			conversation = [conversationPool[0]];
+			
+			// Create a pool of remaining questions
+			const remainingQuestions = [...conversationPool.slice(1)];
+			
+			// Randomly select 7-9 more questions
+			const questionCount = 7 + Math.floor(Math.random() * 3);
+			
+			for (let i = 0; i < questionCount; i++) {
+				if (remainingQuestions.length === 0) break;
+				
+				// Select a random question
+				const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+				conversation.push(remainingQuestions[randomIndex]);
+				
+				// Remove the selected question
+				remainingQuestions.splice(randomIndex, 1);
+			}
+		}
+		
+		// Initialize the chat
+		function initChat() {
+			// Generate a random conversation flow
+			generateRandomConversation();
+			
+			// Add initial message after a short delay
+			setTimeout(() => {
+				receiveMessage(conversation[0].message);
+				showOptions(conversation[0].options);
+			}, 1000);
+		}
+		
+		// Display a received message
+		function receiveMessage(text) {
+			waitingForResponse = false;
+			typingIndicator.style.display = 'none';
+			
+			const messageDiv = document.createElement('div');
+			messageDiv.className = 'message received';
+			messageDiv.innerHTML = text + '<div class="message-time">' + getCurrentTime() + '</div>';
+			chatMessages.appendChild(messageDiv);
+			
+			scrollToBottom();
+		}
+		
+		// Display a sent message
+		function sendMessage(text) {
+			const messageDiv = document.createElement('div');
+			messageDiv.className = 'message sent';
+			messageDiv.innerHTML = text + '<div class="message-time">' + getCurrentTime() + '</div>';
+			chatMessages.appendChild(messageDiv);
+			
+			scrollToBottom();
+		}
+		
+		// Show response options
+		function showOptions(options) {
+			const optionsContainer = document.createElement('div');
+			optionsContainer.className = 'options-container';
+			
+			// Randomize the order of options
+			const shuffledOptions = [...options].sort(() => Math.random() - 0.5);
+			
+			shuffledOptions.forEach(option => {
+				const button = document.createElement('button');
+				button.className = 'option-button';
+				button.textContent = option.text;
+				button.addEventListener('click', () => selectOption(option));
+				optionsContainer.appendChild(button);
+			});
+			
+			chatMessages.appendChild(optionsContainer);
+			scrollToBottom();
+		}
+		
+		// Handle option selection
+		function selectOption(option) {
+			// Remove options
+			const optionsContainer = document.querySelector('.options-container');
+			if (optionsContainer) {
+				optionsContainer.remove();
+			}
+			
+			// Send selected message
+			sendMessage(option.text);
+			
+			// Update trust level
+			updateTrustLevel(option.trustChange);
+			
+			// Show typing indicator
+			waitingForResponse = true;
+			typingIndicator.style.display = 'block';
+			scrollToBottom();
+			
+			// Move to next conversation stage
+			conversationStage++;
+			
+			// Check if conversation should continue or end
+			setTimeout(() => {
+				if (trustLevel >= maxTrustLevel) {
+					// Loan approved
+					receiveMessage("You know what? I trust you. I'll lend you the £10,000. Let me know your bank details and I'll transfer it today.");
+					completeLevel();
+				} else if (conversationStage >= conversation.length) {
+					// End of predefined conversation, make decision based on trust level
+					if (trustLevel >= 70) {
+						receiveMessage("You know what? I trust you. I'll lend you the £10,000. Let me know your bank details and I'll transfer it today.");
+						completeLevel();
+					} else {
+						failedAttempts++;
+						if (failedAttempts >= 3) {
+							receiveMessage("I'm sorry, but I've thought about it carefully and I just don't feel comfortable lending you such a large amount. I wish you luck finding the money elsewhere.");
+							showFailedState(true); // Permanent failure
+						} else {
+							receiveMessage("I'm not quite convinced yet. I need to think about this more. Can we start this conversation again with more details?");
+							showFailedState(false); // Temporary failure
+						}
+					}
+				} else {
+					// Continue conversation
+					receiveMessage(conversation[conversationStage].message);
+					showOptions(conversation[conversationStage].options);
+				}
+			}, getRandomDelay());
+		}
+		
+		// Show failed state
+		function showFailedState(permanent) {
+			progressBar.style.width = 0 + '%';
+			if (permanent) {
+				failedMessage.textContent = "After 3 attempts, Alex has decided not to lend you the money. Game over.";
+				retryButton.style.display = 'none';
+			} else {
+				failedMessage.textContent = "You failed to convince Alex. Try again with better answers.";
+				retryButton.style.display = 'block';
+			}
+			failedMessage.style.display = 'block';
+		}
+		
+		// Update trust level
+		function updateTrustLevel(change) {
+			trustLevel += change;
+			if (trustLevel > maxTrustLevel) trustLevel = maxTrustLevel;
+			if (trustLevel < 0) trustLevel = 0;
+			
+			// Update progress bar with animation
+			progressBar.style.width = (trustLevel / maxTrustLevel * 100) + '%';
+		}
+		
+		// Complete the level
+		function completeLevel() {
+			progressBar.style.width = 100 + '%';
+			nextButton.style.display = 'block';
+		}
+		
+		// Reset chat for a new attempt
+		function resetChat() {
+			chatMessages.innerHTML = '';
+			trustLevel = 0;
+			conversationStage = 0;
+			progressBar.style.width = '0%';
+			failedMessage.style.display = 'none';
+			retryButton.style.display = 'none';
+			
+			// Generate a new random conversation
+			generateRandomConversation();
+			
+			initChat();
+		}
+		
+		// Helper function to get current time
+		function getCurrentTime() {
+			const now = new Date();
+			return now.getHours().toString().padStart(2, '0') + ':' + 
+				   now.getMinutes().toString().padStart(2, '0');
+		}
+		
+		// Helper function to get random delay (simulates typing)
+		function getRandomDelay() {
+			return 1000 + Math.random() * 2000;
+		}
+		
+		// Helper function to scroll chat to bottom
+		function scrollToBottom() {
+			chatMessages.scrollTop = chatMessages.scrollHeight;
+		}
+		
+		// Event listeners
+		retryButton.addEventListener('click', resetChat);
+		
+		// Initialize the chat
+		initChat();
+
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		.container {
+			overflow-x: auto;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">The true button is in a emoji...</h1>
+	<div class="container">
+		<button id="fake">😂</button>
+		<button id="fake">😃</button>
+		<button id="fake">😎</button>
+		<button id="fake">😁</button>
+		<button id="fake">😝</button>
+		<button id="fake">😅</button>
+		<button id="fake">😕</button>
+		<button id="fake">🥰</button>
+		<button id="fake">😘</button>
+		<button id="fake">☺️</button>
+		<button id="next">😔</button>
+		<button id="fake">😀</button>
+		<button id="fake">🙃</button>
+		<button id="fake">😍</button>
+		<button id="fake">🫤</button>
+	</div>
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 4;
+		const allowTip = true;
+		const tip = `Which <b>one</b> emoji is different type than other?`;
+		const completeText = `Because that emoji is only one <b>sad</b>.`;
+
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>

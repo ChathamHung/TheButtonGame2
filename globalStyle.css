@@ -1,0 +1,42 @@
+/* Global Style */
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	background-color: white;
+	user-select: none;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	min-height: 100vh;
+	padding-bottom: 20px;
+	box-sizing: border-box;
+	overflow: hidden;
+}
+
+.title {
+	margin: 5px;
+}
+
+.container {
+	display: flex;
+	justify-content: left;
+	width: 100%;
+	margin-top: auto;
+}
+
+button {
+	background-color: #555;
+	color: white;
+	font-size: 18px;
+	border: none;
+	border-radius: 5px;
+	margin: 5px;
+	padding: 10px;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+button:hover {
+	background-color: #777;
+}

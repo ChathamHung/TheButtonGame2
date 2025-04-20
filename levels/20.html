@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="../globalStyle.css"> <!-- Global Style: Do not delete -->
+	<style>
+		body {
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+			height: 100vh;
+		}
+		
+		.title {
+			position: relative;
+			z-index: 10;
+			text-align: center;
+		}
+		
+		button {
+			position: absolute;
+			transition: all 1s ease;
+			cursor: pointer;
+		}
+		
+		button:hover {
+			transform: scale(1.1);
+		}
+		
+		#next {
+			z-index: 5;
+		}
+	</style> <!-- Local Style -->
+</head>
+<body>
+	<h1 class="title">Last level... Find the button...</h1>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="fakeBtn">Click me!</button>
+	<button id="next">Finish game!</button>
+	<script src="../globalScript.js"></script> <!-- Global Script: Do not delete -->
+	<script>
+		const level = 20;
+		const allowTip = true;
+		const tip = `There are 20 buttons moving randomly. Only one is the <b>Finish game</b> button. Try to catch it!`;
+		const completeText = `Congratulations! You've completed all levels!`;
+		
+		// Get all buttons
+		const fakeButtons = document.querySelectorAll("#fakeBtn");
+		const nextButton = document.querySelector("#next");
+		const allButtons = [...fakeButtons, nextButton];
+		
+		// Set initial positions for all buttons
+		allButtons.forEach(button => {
+			positionButtonRandomly(button);
+		});
+		
+		// Add event listeners for when mouse enters any button
+		allButtons.forEach(button => {
+			button.addEventListener('mouseenter', function() {
+				// Move the button when mouse enters
+				positionButtonRandomly(button);
+			});
+		});
+		
+		// Set interval to move all buttons every 1 second
+		const moveInterval = setInterval(() => {
+			allButtons.forEach(button => {
+				positionButtonRandomly(button);
+			});
+		}, 1000);
+		
+		// Clean up interval when page is unloaded
+		window.addEventListener('beforeunload', function() {
+			clearInterval(moveInterval);
+		});
+		
+		// Function to position a button randomly
+		function positionButtonRandomly(button) {
+			// Get viewport dimensions
+			const viewportWidth = window.innerWidth;
+			const viewportHeight = window.innerHeight;
+			
+			// Get button dimensions
+			const buttonWidth = button.offsetWidth;
+			const buttonHeight = button.offsetHeight;
+			
+			// Calculate maximum positions
+			const maxX = viewportWidth - buttonWidth;
+			const maxY = viewportHeight - buttonHeight;
+			
+			// Set random position
+			const randomX = Math.floor(Math.random() * maxX);
+			const randomY = Math.floor(Math.random() * maxY);
+			
+			// Apply position
+			button.style.left = randomX + 'px';
+			button.style.top = randomY + 'px';
+		}
+
+		function showMessage(message, title) {
+			window.parent.postMessage({
+				type: 'showMessage',
+				level: level,
+				message: message,
+				title: title,
+				button: 'OK'
+			}, '*');
+		}
+
+		fakeButtons.forEach(button => {
+			button.addEventListener('click', function() {
+				showMessage('You clicked the fake button!', 'Oops!');
+			});
+		});
+		
+		setup(level, allowTip, tip, completeText);
+	</script> <!-- Local Script -->
+</body>
+</html>
