@@ -1,2 +1,21 @@
-# TheButtonGame2
-The Button Game 2 have 20 levels for you!
+# The Button Game 2
+
+Welcome to **The Button Game 2**! This game features 20 challenging and fun levels for you to complete. Test your skills and enjoy the journey!
+
+## Features
+
+- **20 Levels**: Progress through increasingly challenging levels.
+- **Interactive Gameplay**: Engage with the game using intuitive button mechanics.
+- **Simple Design**: A clean and minimalistic interface built with HTML, CSS, and JavaScript.
+
+## Technologies Used
+
+- **HTML**: Structure and layout
+- **CSS**: Styling and design
+- **JavaScript**: Game logic and interactivity
+
+## Getting Started
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ChathamHung/TheButtonGame2.git
