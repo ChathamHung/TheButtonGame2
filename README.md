@@ -2,6 +2,18 @@
 
 Welcome to **The Button Game 2**! This game features 20 challenging and fun levels for you to complete. Test your skills and enjoy the journey!
 
+## Getting Started
+
+### Option 1
+Go to https://chathamhung.github.io/TheButtonGame2/ to play!
+
+### Option 2
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ChathamHung/TheButtonGame2.git
+   ```
+2. Open the `index.html` file in your browser to start playing.
+
 ## Features
 
 - **20 Levels**: Progress through increasingly challenging levels.
@@ -13,14 +25,6 @@ Welcome to **The Button Game 2**! This game features 20 challenging and fun leve
 - **HTML**: Structure and layout
 - **CSS**: Styling and design
 - **JavaScript**: Game logic and interactivity
-
-## Getting Started
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/ChathamHung/TheButtonGame2.git
-   ```
-2. Open the `index.html` file in your browser to start playing.
 
 ## Contributing
 
