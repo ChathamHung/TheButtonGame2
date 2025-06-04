@@ -74,6 +74,10 @@
 			background-color: #45a049;
 		}
 		
+		.submit-btn:disabled {
+			background-color: #6b6b6b;
+		}
+
 		.feedback {
 			margin-top: 20px;
 			font-size: 18px;
@@ -244,6 +248,7 @@
 			}
 			
 			if (userAnswer === currentQuestion.answer.toLowerCase()) {
+				answerInput.disabled = true;
 				feedbackElement.textContent = 'Correct! Well done!';
 				feedbackElement.className = 'feedback correct';
 				correctAnswers++;
@@ -252,6 +257,7 @@
 				setTimeout(() => {
 					currentQuestionIndex++;
 					displayCurrentQuestion();
+					answerInput.disabled = false;
 				}, 1500);
 			} else {
 				feedbackElement.textContent = 'Incorrect. Try again!';
