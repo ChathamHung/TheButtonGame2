@@ -248,7 +248,7 @@
 			}
 			
 			if (userAnswer === currentQuestion.answer.toLowerCase()) {
-				answerInput.disabled = true;
+				submitButton.disabled = true;
 				feedbackElement.textContent = 'Correct! Well done!';
 				feedbackElement.className = 'feedback correct';
 				correctAnswers++;
@@ -257,7 +257,7 @@
 				setTimeout(() => {
 					currentQuestionIndex++;
 					displayCurrentQuestion();
-					answerInput.disabled = false;
+					submitButton.disabled = false;
 				}, 1500);
 			} else {
 				feedbackElement.textContent = 'Incorrect. Try again!';
