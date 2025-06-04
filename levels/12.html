@@ -24,13 +24,12 @@
 		}
 		
 		.main-container {
-			max-width: 600px;
+			/* max-width: 600px; */
 			width: 100%;
 			background-color: white;
 			padding: 20px;
 			border-radius: 8px;
 			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-			overflow-x: auto;
 		}
 		
 		.page {
@@ -254,7 +253,7 @@
 				<div class="rule" id="rule-6">Rule 6: Password must contain the current month number</div>
 				<div class="rule" id="rule-7">Rule 7: Password must contain a mathematical equation that equals 10</div>
 				<div class="rule" id="rule-8">Rule 8: Password must contain a color (red, blue, green, etc.)</div>
-				<div class="rule" id="rule-9">Rule 9: Password must contain an emoji</div>
+				<div class="rule" id="rule-9">Rule 9: Password must contain an ":D"</div>
 				<div class="rule" id="rule-10">Rule 10: Password must contain the word "secure"</div>
 			</div>
 			
@@ -600,8 +599,7 @@
 			
 			if (validRules.has(8)) {
 				// Rule 9: Contains an emoji
-				const emojiRegex = /[\p{Emoji}]/u;
-				if (emojiRegex.test(passwordValue)) {
+				if (passwordValue.toLowerCase().includes(':d')) {
 					validRules.add(9);
 					document.getElementById('rule-9').classList.add('valid');
 					document.getElementById('rule-9').classList.remove('invalid');
